@@ -12,6 +12,8 @@ export default class Game extends Phaser.Scene {
   rightEdge: number;
   platformGroup: Phaser.GameObjects.Group;
   platformPosition: number;
+  timer: number;
+  timeText: Phaser.GameObjects.Text;
 
   constructor() {
     super('game');
@@ -85,6 +87,9 @@ export default class Game extends Phaser.Scene {
       }
     })
     this.physics.add.collider(this.player, this.platformGroup);
+
+    //timer
+    this.timeText = this.add.text(900, 10, "Time Survived:");
   }
 
 
@@ -121,5 +126,10 @@ export default class Game extends Phaser.Scene {
         this.platformGroup.killAndHide(platform);
       }
     });
+
+    //timer
+    this.timer = this.time.now * 0.001;
+    this.timeText.setText("Time Survived: " + Math.round(this.timer) );
+
   }
 }
