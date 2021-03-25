@@ -5,4 +5,11 @@ export default function createPokiAnims(anims) {
     frameRate: 15,
     repeat: -1,
   });
+
+  anims.create({
+    key: 'die',
+    frames: anims.generateFrameNumbers('poki', { start: 4, end: 5 }),
+    frameRate: 15,
+    repeat: -1,
+  });
 }

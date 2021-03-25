@@ -81,6 +81,7 @@ export default class Game extends Phaser.Scene {
     }
 
     if (this.player.y > 450) {
+      //this.player.anims.play('die', true);
       this.scene.start('gameover');
     }
   }

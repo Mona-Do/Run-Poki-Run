@@ -9,8 +9,8 @@ export default class Preloader extends Phaser.Scene {
     this.load.image('platform', 'assets/img/ground.png');
     this.load.image('layer-meme', 'assets/img/layer-meme.png');
     this.load.spritesheet('poki', 'assets/img/poki.png', {
-      frameWidth: 104,
-      frameHeight: 72,
+      frameWidth: 86,
+      frameHeight: 64,
     });
 
     //this.cursors = this.input.keyboard.createCursorKeys();

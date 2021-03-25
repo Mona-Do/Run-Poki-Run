@@ -1,7 +1,5 @@
 import Phaser from 'phaser';
 
-import createPokiAnims from '../anims/poki.js';
-
 export default class Gameover extends Phaser.Scene {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   constructor() {
