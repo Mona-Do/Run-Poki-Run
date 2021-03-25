@@ -8,11 +8,9 @@ export default class Game extends Phaser.Scene {
   w: number;
   h: number;
   spike1: Phaser.Physics.Arcade.StaticGroup;
-  scrollX: number;
-  rightEdge: number;
+  startY: any;
   platformGroup: Phaser.GameObjects.Group;
   platformPosition: number;
-
   constructor() {
     super('game');
   }
@@ -59,6 +57,7 @@ export default class Game extends Phaser.Scene {
     this.player.body.setGravityY(300);
     this.player.body.setVelocityX(250);
     this.physics.add.collider(this.player, this.platform);
+    this.physics.add.collider(this.player, this.platformGroup);
     createPokiAnims(this.anims);
     this.player.anims.play('run');
 
@@ -84,7 +83,7 @@ export default class Game extends Phaser.Scene {
           .setScale(1);
       }
     })
-    this.physics.add.collider(this.player, this.platformGroup);
+
   }
 
 
@@ -104,7 +103,7 @@ export default class Game extends Phaser.Scene {
     //poki move
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    if (this.cursors.space?.isDown && this.player.body.touching.down) {
+    if (this.cursors.space?.isDown && this.player.body.touching .down) {
       this.player.setVelocityY(-200);
       //this.player.anims.play('jump', true);
     }
@@ -114,10 +113,10 @@ export default class Game extends Phaser.Scene {
       this.scene.start('gameover');
     }
 
-    //object
+    //object pool update
     this.platformGroup.incX(-8);
-    this.platformGroup.getChildren().forEach((platform) => {
-      if (platform.active && this.platform.x < 0) {
+    this.platformGroup.getChildren().forEach(platform => {
+      if (platform.active && this.platform.x < 0){
         this.platformGroup.killAndHide(platform);
       }
     });
