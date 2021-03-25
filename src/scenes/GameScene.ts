@@ -7,6 +7,9 @@ export default class Game extends Phaser.Scene {
   color2: Phaser.Display.Color;
   w: number;
   h: number;
+  spike1: Phaser.Physics.Arcade.StaticGroup;
+  startY: any;
+  platformGroup: Phaser.GameObjects.Group;
   constructor() {
     super('game');
   }
@@ -44,6 +47,10 @@ export default class Game extends Phaser.Scene {
     this.platform.create(1800, 400, 'platform');
     this.platform.create(2400, 400, 'platform');
 
+    //set the spike behind
+    //this.spike1 = this.physics.add.staticGroup();
+    //this.spike1.create(0, 0, 'spike-behind');
+
     //player
     this.player = this.physics.add.sprite(100, 300, 'poki');
     this.player.body.setGravityY(300);
@@ -57,6 +64,13 @@ export default class Game extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, Number.MAX_SAFE_INTEGER, 500);
     this.w = this.cameras.main.width;
     this.h = this.cameras.main.height;
+
+    this.platformGroup = this.add.group();
+
+  }
+
+  addPlatform(){
+
   }
 
   update() {
@@ -75,7 +89,7 @@ export default class Game extends Phaser.Scene {
     //poki move
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    if (this.cursors.space?.isDown) {
+    if (this.cursors.space?.isDown && this.player.body.touching .down) {
       this.player.setVelocityY(-200);
       //this.player.anims.play('jump', true);
     }
