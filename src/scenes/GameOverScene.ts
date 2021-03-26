@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 
 export default class Gameover extends Phaser.Scene {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  timer: number;
+  timeText: any;
   constructor() {
     super('gameover');
   }
@@ -18,10 +20,13 @@ export default class Gameover extends Phaser.Scene {
   }
 
   update() {
+
     this.cursors = this.input.keyboard.createCursorKeys();
     if (this.cursors.space?.isDown) {
       this.scene.stop('gameover');
       this.scene.start('game');
     }
+
+
   }
 }
