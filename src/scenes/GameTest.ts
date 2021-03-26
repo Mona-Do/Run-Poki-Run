@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 
 import createPokiAnims from '../anims/poki.js';
 
-export default class Game extends Phaser.Scene {
+export default class GameTest extends Phaser.Scene {
   color1: Phaser.Display.Color;
   color2: Phaser.Display.Color;
   w: number;
@@ -14,9 +14,12 @@ export default class Game extends Phaser.Scene {
   timer: number;
   timeText: Phaser.GameObjects.Text;
   spike1: any;
+  platformPool: any;
+  nextPlatformDistance: number;
+  spawnRange: number;
 
   constructor() {
-    super('game');
+    super('gametest');
   }
 
   player;
@@ -41,12 +44,10 @@ export default class Game extends Phaser.Scene {
     this.color1 = new Phaser.Display.Color(105, 59, 76);
     this.color2 = new Phaser.Display.Color(105, 70, 0);
 
-    //platform
-    this.platform = this.physics.add.staticGroup();
-
     //need to add an object pool
+    this.platform = this.physics.add.staticGroup();
     this.platform.create(0, 400, 'platform');
-    this.platform.create(400, 400, 'platform');
+    // this.platform.create(400, 400, 'platform');
     // this.platform.create(900, 400, 'platform');
     // this.platform.create(1300, 400, 'platform');
     // this.platform.create(1800, 400, 'platform');
@@ -71,27 +72,56 @@ export default class Game extends Phaser.Scene {
     this.h = this.cameras.main.height;
 
     //platform group
-    this.platformGroup = this.physics.add.staticGroup({
-      defaultKey: 'platform',
+    // group with all active platforms.
+    //this.platform.body.setGravityY(0);
+    this.platformGroup = this.add.group({
+      // once a platform is removed, it's added to the pool
+      defaultKey: this.platform
+      // removeCallback: function (platform) {
+      //   platform.scene.platformPool.add(platform);
+      // },
     });
+    this.platformGroup = this.physics.add.staticGroup();
 
-    this.time.addEvent({
-      delay: 300,
-      loop: true,
-      callback: () => {
-        // this.platformPosition = ;
-
-        const x = [800, 1300, 2400][Phaser.Math.Between(0, 2)];
-        const y = 400;
-        const z = Phaser.Math.Between(0.3, 1);
-        this.platformGroup
-          .get(x, y)
-          .setActive(true)
-          .setVisible(true)
-          .setScale(z, 1);
+    // pool
+    this.platformPool = this.add.group({
+      // once a platform is removed from the pool, it's added to the active platforms group
+      removeCallback: function (platform) {
+        this.platformGroup.add(platform);
       },
     });
+
+    // adding a platform to the game, the arguments are platform width and x position
+    this.addPlatform(this.scale.width, this.scale.width / 2);
+
+    // setting collisions between the player and the platform group
     this.physics.add.collider(this.player, this.platformGroup);
+  }
+
+  // the core of the script: platform are added from the pool or created on the fly
+  addPlatform(platformWidth, posX) {
+    let platform;
+    if (this.platformPool.getLength()) {
+      platform = this.platformPool.getFirst();
+      platform.x = posX;
+      platform.active = true;
+      platform.visible = true;
+      this.platformPool.remove(platform);
+    } else {
+      platform = this.physics.add.sprite(
+        posX,
+        this.scale.height * 0.8,
+        'platform'
+      );
+      platform.setImmovable(true);
+      platform.setVelocityX(-100);
+      this.platformGroup.add(platform);
+    }
+    platform.displayWidth = platformWidth;
+    this.nextPlatformDistance = Phaser.Math.Between(
+      (this.spawnRange = 100),
+      (this.spawnRange = 350)
+    );
 
     //set the timer
     //make it stick on the top right
@@ -124,14 +154,6 @@ export default class Game extends Phaser.Scene {
       //this.player.anims.play('die', true);
       this.scene.start('gameover');
     }
-
-    //object
-    this.platformGroup.incX(-8);
-    this.platformGroup.getChildren().forEach((platform) => {
-      if (platform.active && this.platform.x < 0) {
-        this.platformGroup.killAndHide(platform);
-      }
-    });
 
     //timer
     this.timer = this.time.now * 0.001;

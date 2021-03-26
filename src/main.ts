@@ -4,6 +4,7 @@ import PreloaderScene from './scenes/PreloaderScene';
 import GameScene from './scenes/GameScene';
 import GameoverScene from './scenes/GameOverScene';
 import GameStartScene from './scenes/GameStartScene';
+import GameTest from './scenes/GameTest';
 
 const config = {
   type: Phaser.AUTO,
@@ -17,7 +18,7 @@ const config = {
     },
   },
   //backgroundColor: '#693B4C',
-  scene: [PreloaderScene, GameStartScene, GameScene, GameoverScene],
+  scene: [PreloaderScene, GameStartScene, GameScene, GameTest, GameoverScene],
 };
 
 export default new Phaser.Game(config);
