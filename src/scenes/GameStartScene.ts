@@ -12,17 +12,28 @@ export default class Gamestart extends Phaser.Scene {
   create() {
     //add play again option
     this.add.image(0, 0, 'start-background').setOrigin(0);
-    this.startButton = this.add.image(571, 250, 'start-btn').setDepth(1);
-    this.startButton.setInteractive();
+    // this.startButton = this.add.image(571, 250, 'start-btn').setDepth(1);
+    // this.startButton.setInteractive();
+    this.add
+      .text(571, 250, 'Press SPACE to start!', {
+        fontSize: '20px',
+      })
+      .setOrigin(0.5);
   }
 
   update() {
-    this.startButton.on(
-      'pointerdown',
-      function () {
-        this.scene.start('game');
-      },
-      this
-    );
+    this.cursors = this.input.keyboard.createCursorKeys();
+    if (this.cursors.space?.isDown) {
+      this.scene.stop('gamestart');
+      this.scene.start('game');
+    }
+
+    // this.startButton.on(
+    //   'pointerdown',
+    //   function () {
+    //     this.scene.start('game');
+    //   },
+    //   this
+    // );
   }
 }

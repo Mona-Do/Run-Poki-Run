@@ -14,6 +14,10 @@ export default class Game extends Phaser.Scene {
   timer: number;
   timeText: Phaser.GameObjects.Text;
   spike1: any;
+  rect: Phaser.GameObjects.Graphics;
+
+
+
 
   constructor() {
     super('game');
@@ -52,6 +56,15 @@ export default class Game extends Phaser.Scene {
     // this.platform.create(1800, 400, 'platform');
     // this.platform.create(2400, 400, 'platform');
 
+
+    this.rect = this.add.graphics();
+    this.rect.fillStyle(0xffff00, 1);
+    this.rect.fillRect(400, 400, 60, 15);
+    // this.physics.add.existing(this.rect);
+
+
+
+
     //set the spike behind
     this.spike1 = this.add.image(0, 0, 'spike-behind').setOrigin(0, 0);
     this.spike1.setScrollFactor(0, 0);
@@ -61,6 +74,7 @@ export default class Game extends Phaser.Scene {
     // this.player.body.setGravityY(0);
     this.player.body.setVelocityX(250);
     this.physics.add.collider(this.player, this.platform);
+    this.physics.add.collider(this.player, this.rect);
     createPokiAnims(this.anims);
     this.player.anims.play('run');
 
