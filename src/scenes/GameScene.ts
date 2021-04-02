@@ -57,9 +57,6 @@ export default class Game extends Phaser.Scene {
     // this.platform.create(2400, 400, 'platform');
 
 
-    this.rect = this.add.graphics();
-    this.rect.fillStyle(0xffff00, 1);
-    this.rect.fillRect(400, 400, 60, 15);
     // this.physics.add.existing(this.rect);
 
 

@@ -13,6 +13,10 @@ export default class GameTest extends Phaser.Scene {
   spawnRange: any;
   plarformSizeRange: number[];
   platformSizeRange: number[];
+  spike1: Phaser.GameObjects.Image;
+  timeText: Phaser.GameObjects.Text;
+  setBackgroundColor: any;
+  timer: number;
 
   constructor() {
     super('gametest');
@@ -21,8 +25,6 @@ export default class GameTest extends Phaser.Scene {
   preload() {}
 
   create() {
-    // this.game = new Phaser.Game(config);
-
     //background
     //make the layer-meme repeat
     let width = this.scale.width;
@@ -43,6 +45,17 @@ export default class GameTest extends Phaser.Scene {
     createPokiAnims(this.anims);
     this.player.anims.play('run');
 
+    //set the spike behind
+    this.spike1 = this.add.image(0, 0, 'spike-behind').setOrigin(0, 0);
+    this.spike1.setScrollFactor(0, 0);
+    this.spike1.depth = 1;
+
+
+    //set the timer - stick to the top right
+    this.timeText = this.add.text(900, 20, 'Time Survived:');
+    this.timeText.setScrollFactor(0, 0);
+
+
 
     // create group
     this.platformGroup = this.add.group({
@@ -59,7 +72,7 @@ export default class GameTest extends Phaser.Scene {
     });
 
     // add platform
-    this.addPlatform(width, width/2);
+    this.addPlatform(width, width / 2);
     this.physics.add.collider(this.player, this.platformGroup);
   }
 
@@ -92,8 +105,16 @@ export default class GameTest extends Phaser.Scene {
 
 
   update() {
+    this.player.x = 250;
 
-    this.player.x = 200;
+    //make the background color change
+    let hexColor = Phaser.Display.Color.Interpolate.ColorWithColor(
+      this.color1,
+      this.color2,
+      100,
+      1
+    );
+    this.cameras.main.setBackgroundColor(hexColor);
 
     // recycling platforms
     let minDistance = 1142;
@@ -127,5 +148,9 @@ export default class GameTest extends Phaser.Scene {
       //this.player.anims.play('die', true);
       this.scene.start('gameover');
     }
+
+    //timer
+    this.timer = this.time.now * 0.001;
+    this.timeText.setText('Time Survived: ' + Math.round(this.timer));
   }
 }
