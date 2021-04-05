@@ -50,12 +50,9 @@ export default class GameTest extends Phaser.Scene {
     this.spike1.setScrollFactor(0, 0);
     this.spike1.depth = 1;
 
-
     //set the timer - stick to the top right
     this.timeText = this.add.text(900, 20, 'Time Survived:');
     this.timeText.setScrollFactor(0, 0);
-
-
 
     // create group
     this.platformGroup = this.add.group({
@@ -76,7 +73,7 @@ export default class GameTest extends Phaser.Scene {
     this.physics.add.collider(this.player, this.platformGroup);
   }
 
-  // the core of the script: platform are added from the pool or created on the fly
+  // Platform are added from the pool or created on the fly
   addPlatform(platformWidth, posX) {
     let platform;
     if (this.platformPool.getLength()) {
@@ -86,11 +83,7 @@ export default class GameTest extends Phaser.Scene {
       platform.visible = true;
       this.platformPool.remove(platform);
     } else {
-      platform = this.physics.add.sprite(
-        posX,
-        400,
-        'platform'
-      );
+      platform = this.physics.add.sprite(posX, 400, 'platform');
       platform.setImmovable(true);
       platform.setVelocityX(-350);
       this.platformGroup.add(platform);
@@ -98,11 +91,10 @@ export default class GameTest extends Phaser.Scene {
     platform.displayWidth = platformWidth;
     this.spawnRange = [110, 300];
     this.nextPlatformDistance = Phaser.Math.Between(
-        this.spawnRange[0],
-        this.spawnRange[1]
-      );
+      this.spawnRange[0],
+      this.spawnRange[1]
+    );
   }
-
 
   update() {
     this.player.x = 250;
