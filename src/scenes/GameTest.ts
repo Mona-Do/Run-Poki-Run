@@ -17,6 +17,9 @@ export default class GameTest extends Phaser.Scene {
   timeText: Phaser.GameObjects.Text;
   setBackgroundColor: any;
   timer: number;
+  platformHeight: number[];
+  platformVerticalLimit: number[];
+  clock: any;
 
   constructor() {
     super('gametest');
@@ -40,7 +43,7 @@ export default class GameTest extends Phaser.Scene {
     this.color2 = new Phaser.Display.Color(105, 70, 0);
 
     //player
-    this.player = this.physics.add.sprite(150, 300, 'poki');
+    this.player = this.physics.add.sprite(200, 300, 'poki');
     this.player.body.setGravityY(900);
     createPokiAnims(this.anims);
     this.player.anims.play('run');
@@ -69,12 +72,13 @@ export default class GameTest extends Phaser.Scene {
     });
 
     // add platform
-    this.addPlatform(width, width / 2);
+    this.platformVerticalLimit = [0.8, 0.4];
+    this.addPlatform(width, width / 2, height * 0.8);
     this.physics.add.collider(this.player, this.platformGroup);
   }
 
   // Platform are added from the pool or created on the fly
-  addPlatform(platformWidth, posX) {
+  addPlatform(platformWidth, posX, posY) {
     let platform;
     if (this.platformPool.getLength()) {
       platform = this.platformPool.getFirst();
@@ -83,21 +87,17 @@ export default class GameTest extends Phaser.Scene {
       platform.visible = true;
       this.platformPool.remove(platform);
     } else {
-      platform = this.physics.add.sprite(posX, 400, 'platform');
+      platform = this.physics.add.sprite(posX, posY, 'platform');
       platform.setImmovable(true);
       platform.setVelocityX(-350);
       this.platformGroup.add(platform);
     }
     platform.displayWidth = platformWidth;
-    this.spawnRange = [110, 300];
-    this.nextPlatformDistance = Phaser.Math.Between(
-      this.spawnRange[0],
-      this.spawnRange[1]
-    );
+    this.nextPlatformDistance = Phaser.Math.Between(110, 300);
   }
 
   update() {
-    this.player.x = 250;
+    this.player.x = 200;
 
     //make the background color change
     let hexColor = Phaser.Display.Color.Interpolate.ColorWithColor(
@@ -110,9 +110,14 @@ export default class GameTest extends Phaser.Scene {
 
     // recycling platforms
     let minDistance = 1142;
+    let rightmostPlatformHeight = 0;
     this.platformGroup.getChildren().forEach(function (platform) {
       let platformDistance = 1142 - platform.x - platform.displayWidth / 2;
-      minDistance = Math.min(minDistance, platformDistance);
+      if (platformDistance < minDistance) {
+        minDistance = platformDistance;
+        rightmostPlatformHeight = platform.y;
+      }
+
       if (platform.x < -platform.displayWidth / 2) {
         this.platformGroup.killAndHide(platform);
         this.platformGroup.remove(platform);
@@ -122,11 +127,26 @@ export default class GameTest extends Phaser.Scene {
     // adding new platforms
     if (minDistance > this.nextPlatformDistance) {
       this.platformSizeRange = [100, 250];
-      var nextPlatformWidth = Phaser.Math.Between(
+      let nextPlatformWidth = Phaser.Math.Between(
         this.platformSizeRange[0],
         this.platformSizeRange[1]
       );
-      this.addPlatform(nextPlatformWidth, 1142 + nextPlatformWidth / 2);
+
+      let platformRandomHeight = 10 * Phaser.Math.Between(10, -10);
+      // console.log(rightmostPlatformHeight);
+      let nextPlatformGap = rightmostPlatformHeight + platformRandomHeight;
+      let minPlatformHeight = 500 * 0.6;
+      let maxPlatformHeight = 500 * 0.8;
+      let nextPlatformHeight = Phaser.Math.Clamp(
+        nextPlatformGap,
+        minPlatformHeight,
+        maxPlatformHeight
+      );
+      this.addPlatform(
+        nextPlatformWidth,
+        1142 + nextPlatformWidth / 2,
+        nextPlatformHeight
+      );
     }
 
     //poki move
@@ -136,13 +156,14 @@ export default class GameTest extends Phaser.Scene {
       //this.player.anims.play('jump', true);
     }
 
+    //timer
+    this.timer = this.time.now * 0.001;
+    this.timeText.setText('Time Survived: ' + Math.round(this.timer));
+
+    //poki die
     if (this.player.y > 450) {
       //this.player.anims.play('die', true);
       this.scene.start('gameover');
     }
-
-    //timer
-    this.timer = this.time.now * 0.001;
-    this.timeText.setText('Time Survived: ' + Math.round(this.timer));
   }
 }
