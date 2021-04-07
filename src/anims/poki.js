@@ -9,7 +9,6 @@ export default function createPokiAnims(anims) {
   anims.create({
     key: 'gethurt',
     frames: anims.generateFrameNumbers('poki', { start: 4, end: 5 }),
-    frameRate: 15,
     duration: 1000,
     repeat: 0,
   });
