@@ -2,7 +2,6 @@ import Phaser from 'phaser';
 import createPokiAnims from '../anims/poki.js';
 
 export default class GameTest extends Phaser.Scene {
-  background: Phaser.GameObjects.TileSprite;
   color1: Phaser.Display.Color;
   color2: Phaser.Display.Color;
   player: any;
@@ -20,6 +19,11 @@ export default class GameTest extends Phaser.Scene {
   platformHeight: number[];
   platformVerticalLimit: number[];
   clock: any;
+  background: any;
+  spikepool: Phaser.GameObjects.Group;
+  spikegroup: Phaser.GameObjects.Group;
+  die: Phaser.Scenes.ScenePlugin;
+  spikePercent: number;
 
   constructor() {
     super('gametest');
@@ -33,7 +37,7 @@ export default class GameTest extends Phaser.Scene {
     let width = this.scale.width;
     let height = this.scale.height;
     this.background = this.add
-      .tileSprite(40, 0, width, height, 'layer-meme')
+      .image(40, 0, 'layer-meme')
       .setOrigin(0, 0)
       .setScrollFactor(0, 0);
     // this.background.setVelocityX(-350);
@@ -57,14 +61,14 @@ export default class GameTest extends Phaser.Scene {
     this.timeText = this.add.text(900, 20, 'Time Survived:');
     this.timeText.setScrollFactor(0, 0);
 
-    // create group
+    // create platform group
     this.platformGroup = this.add.group({
       removeCallback: function (platform) {
         platform.scene.platformPool.add(platform);
       },
     });
 
-    // create pool
+    // create platform pool
     this.platformPool = this.add.group({
       removeCallback: function (platform) {
         platform.scene.platformGroup.add(platform);
@@ -72,9 +76,35 @@ export default class GameTest extends Phaser.Scene {
     });
 
     // add platform
-    this.platformVerticalLimit = [0.8, 0.4];
+    // this.platformVerticalLimit = [0.8, 0.4];
     this.addPlatform(width, width / 2, height * 0.8);
     this.physics.add.collider(this.player, this.platformGroup);
+
+    //create spike group and pool
+    this.spikegroup = this.add.group({
+      removeCallback: function (spike) {
+        spike.scene.spikepool.add(spike);
+      },
+    });
+    this.spikepool = this.add.group({
+      removeCallback: function (spike) {
+        spike.scene.spikegroup.add(spike);
+      },
+    });
+
+    // collide with spikes
+    this.physics.add.overlap(
+      this.player,
+      this.spikegroup,
+      function (player, spike) {
+        this.gethurt = true;
+        this.player.anims.stop();
+        this.player.body.setVelocityY(-200);
+        this.physics.world.removeCollider(this.platformCollider);
+      },
+      null,
+      this
+    );
   }
 
   // Platform are added from the pool or created on the fly
@@ -94,6 +124,33 @@ export default class GameTest extends Phaser.Scene {
     }
     platform.displayWidth = platformWidth;
     this.nextPlatformDistance = Phaser.Math.Between(110, 300);
+
+    this.spikePercent = 25;
+
+    if (Phaser.Math.Between(1, 100) <= this.spikePercent) {
+      if (this.spikepool.getLength()) {
+        let spike = this.spikepool.getFirst();
+        spike.x =
+          posX - platformWidth / 2 + Phaser.Math.Between(1, platformWidth);
+        spike.y = posY - 46;
+        spike.alpha = 1;
+        spike.active = true;
+        spike.visible = true;
+        this.spikepool.remove(spike);
+      } else {
+        let spike = this.physics.add.sprite(
+          posX - platformWidth / 2 + Phaser.Math.Between(1, platformWidth),
+          posY - 15,
+          'spike-single'
+        );
+        spike.setImmovable(true);
+        spike.setVelocityX(platform.body.velocity.x);
+        // spike.setSize(8, 2, true)
+        // spike.anims.play("burn");
+        spike.setDepth(2);
+        this.spikegroup.add(spike);
+      }
+    }
   }
 
   update() {
@@ -124,6 +181,14 @@ export default class GameTest extends Phaser.Scene {
       }
     }, this);
 
+    //recycle spikes
+    this.spikegroup.getChildren().forEach(function (spike) {
+      if (spike.x < -spike.displayWidth / 2) {
+        this.spikegroup.killAndHide(spike);
+        this.spikegroup.remove(spike);
+      }
+    }, this);
+
     // adding new platforms
     if (minDistance > this.nextPlatformDistance) {
       this.platformSizeRange = [100, 250];
@@ -142,11 +207,7 @@ export default class GameTest extends Phaser.Scene {
         minPlatformHeight,
         maxPlatformHeight
       );
-      this.addPlatform(
-        nextPlatformWidth,
-        1142 + nextPlatformWidth / 2,
-        nextPlatformHeight
-      );
+      this.addPlatform(nextPlatformWidth, 1142 + nextPlatformWidth / 2, 400);
     }
 
     //poki move

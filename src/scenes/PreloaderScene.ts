@@ -15,6 +15,18 @@ export default class Preloader extends Phaser.Scene {
       frameWidth: 86,
       frameHeight: 64,
     });
+    this.load.spritesheet('spike-single', 'assets/img/spike-single.png', {
+      frameWidth: 30,
+      frameHeight: 40,
+    });
+    this.load.spritesheet('spike-double', 'assets/img/spike-double.png', {
+      frameWidth: 60,
+      frameHeight: 40,
+    });
+    // this.load.spritesheet('layer-meme', 'assets/img/layer-meme.png', {
+    //   frameWidth: 543,
+    //   frameHeight: 502,
+    // });
 
     //this.cursors = this.input.keyboard.createCursorKeys();
   }
