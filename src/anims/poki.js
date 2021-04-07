@@ -7,9 +7,10 @@ export default function createPokiAnims(anims) {
   });
 
   anims.create({
-    key: 'die',
+    key: 'gethurt',
     frames: anims.generateFrameNumbers('poki', { start: 4, end: 5 }),
     frameRate: 15,
-    repeat: -1,
+    duration: 1000,
+    repeat: 0,
   });
 }

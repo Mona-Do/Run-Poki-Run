@@ -100,7 +100,7 @@ export default class GameTest extends Phaser.Scene {
         this.gethurt = true;
         this.player.anims.stop();
         this.player.body.setVelocityY(-200);
-        this.physics.world.removeCollider(this.platformCollider);
+        // this.physics.world.removeCollider(this.platformCollider);
       },
       null,
       this
@@ -132,8 +132,7 @@ export default class GameTest extends Phaser.Scene {
         let spike = this.spikepool.getFirst();
         spike.x =
           posX - platformWidth / 2 + Phaser.Math.Between(1, platformWidth);
-        spike.y = posY - 46;
-        spike.alpha = 1;
+        spike.y = posY - 15;
         spike.active = true;
         spike.visible = true;
         this.spikepool.remove(spike);

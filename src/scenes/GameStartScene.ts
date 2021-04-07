@@ -25,15 +25,7 @@ export default class Gamestart extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
     if (this.cursors.space?.isDown) {
       this.scene.stop('gamestart');
-      this.scene.start('gametest');
+      this.scene.start('game');
     }
-
-    // this.startButton.on(
-    //   'pointerdown',
-    //   function () {
-    //     this.scene.start('game');
-    //   },
-    //   this
-    // );
   }
 }

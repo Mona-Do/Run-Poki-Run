@@ -24,7 +24,7 @@ export default class Gameover extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
     if (this.cursors.space?.isDown) {
       this.scene.stop('gameover');
-      this.scene.start('gametest');
+      this.scene.start('game');
     }
 
 
