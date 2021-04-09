@@ -7,6 +7,7 @@ export default class Preloader extends Phaser.Scene {
 
   preload() {
     this.load.image('start-background', 'assets/img/start-page.png');
+    this.load.image('background', 'assets/img/background.png');
     this.load.image('start-btn', 'assets/img/start-btn.png');
     this.load.image('platform', 'assets/img/ground.png');
     this.load.image('spike-behind', 'assets/img/spike-behind.png');
@@ -32,6 +33,6 @@ export default class Preloader extends Phaser.Scene {
   }
 
   create() {
-    this.scene.start('gamestart');
+    this.scene.start('gameover');
   }
 }

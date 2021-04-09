@@ -42,6 +42,7 @@ export default class GameScene extends Phaser.Scene {
       .image(40, 0, 'layer-meme')
       .setOrigin(0, 0)
       .setScrollFactor(0, 0);
+    
     // this.background.setVelocityX(-350);
 
     //set the background color
