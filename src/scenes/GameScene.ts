@@ -26,9 +26,14 @@ export default class GameScene extends Phaser.Scene {
   timer: Phaser.Time.TimerEvent;
   timeCounter: number = 0;
   static timeCounter: number;
+  deadlineText: string;
 
   constructor() {
     super('game');
+  }
+
+  init(data: any) {
+    this.deadlineText = data.deadlineText;
   }
 
   refresh() {}
@@ -81,7 +86,7 @@ export default class GameScene extends Phaser.Scene {
 
     // create platform pool
     this.platformPool = this.add.group({
-      removeCallback: function (platform) {
+      removeCallback: function (platform: Phaser.Physics.Arcade.Sprite) {
         platform.scene.platformGroup.add(platform);
       },
     });
@@ -90,6 +95,22 @@ export default class GameScene extends Phaser.Scene {
     // this.platformVerticalLimit = [0.8, 0.4];
     this.addPlatform(width, width / 2, height * 0.8);
     this.physics.add.collider(this.player, this.platformGroup);
+
+    // Add escape text
+    this.addEscapeText();
+  }
+
+  addEscapeText() {
+    for (let index = 0; index < 100; index++) {
+      const x = 10;
+      const y = 10 + index * 20;
+
+      this.add
+        .text(x, y, this.deadlineText, {
+          fontSize: '20px',
+        })
+        .setOrigin(0.5);
+    }
   }
 
   // Platform are added from the pool or created on the fly
@@ -237,6 +258,7 @@ export default class GameScene extends Phaser.Scene {
       //this.player.anims.play('die', true);
       this.scene.start('gameover', {
         timeCounter: this.timeCounter,
+        deadlineText: this.deadlineText,
       });
       this.timeCounter = 0;
     }
