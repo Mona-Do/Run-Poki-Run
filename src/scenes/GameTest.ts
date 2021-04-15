@@ -15,7 +15,6 @@ export default class GameTest extends Phaser.Scene {
   spike1: Phaser.GameObjects.Image;
   timeText: Phaser.GameObjects.Text;
   setBackgroundColor: any;
-  timer: number;
   platformHeight: number[];
   platformVerticalLimit: number[];
   clock: any;
@@ -24,10 +23,15 @@ export default class GameTest extends Phaser.Scene {
   spikegroup: Phaser.GameObjects.Group;
   die: Phaser.Scenes.ScenePlugin;
   spikePercent: number;
+  timer: Phaser.Time.TimerEvent;
+  timeCounter: number = 0;
+  static timeCounter: number;
 
   constructor() {
     super('gametest');
   }
+
+  refresh() {}
 
   preload() {}
 
@@ -40,14 +44,13 @@ export default class GameTest extends Phaser.Scene {
       .image(40, 0, 'layer-meme')
       .setOrigin(0, 0)
       .setScrollFactor(0, 0);
-    // this.background.setVelocityX(-350);
 
     //set the background color
     this.color1 = new Phaser.Display.Color(105, 59, 76);
     this.color2 = new Phaser.Display.Color(105, 70, 0);
 
     //player
-    this.player = this.physics.add.sprite(200, 300, 'poki');
+    this.player = this.physics.add.sprite(300, 300, 'poki');
     this.player.body.setGravityY(900);
     createPokiAnims(this.anims);
     this.player.anims.play('run');
@@ -57,9 +60,15 @@ export default class GameTest extends Phaser.Scene {
     this.spike1.setScrollFactor(0, 0);
     this.spike1.depth = 1;
 
-    //set the timer - stick to the top right
+    //set the timer
     this.timeText = this.add.text(900, 20, 'Time Survived:');
     this.timeText.setScrollFactor(0, 0);
+    this.timer = this.time.addEvent({
+      delay: 1000, // ms
+      callback: this.timerUpdate,
+      callbackScope: this,
+      loop: true,
+    });
 
     // create platform group
     this.platformGroup = this.add.group({
@@ -75,10 +84,29 @@ export default class GameTest extends Phaser.Scene {
       },
     });
 
-    // add platform
+    // add the initial platform
     // this.platformVerticalLimit = [0.8, 0.4];
     this.addPlatform(width, width / 2, height * 0.8);
     this.physics.add.collider(this.player, this.platformGroup);
+  }
+
+  // Platform are added from the pool or created on the fly
+  addPlatform(platformWidth: number, posX: number, posY: number) {
+    let platform;
+    if (this.platformPool?.getLength()) {
+      platform = this.platformPool.getFirst();
+      platform.x = posX;
+      platform.active = true;
+      platform.visible = true;
+      this.platformPool.remove(platform);
+    } else {
+      platform = this.physics.add.sprite(posX, posY, 'platform');
+      platform.setImmovable(true);
+      platform.setVelocityX(-350);
+      this.platformGroup.add(platform);
+    }
+    platform.displayWidth = platformWidth;
+    this.nextPlatformDistance = Phaser.Math.Between(110, 300);
 
     //create spike group and pool
     this.spikegroup = this.add.group({
@@ -96,39 +124,23 @@ export default class GameTest extends Phaser.Scene {
     this.physics.add.overlap(
       this.player,
       this.spikegroup,
-      function (player, spike) {
+      function () {
         this.gethurt = true;
-        this.player.anims.stop();
-        this.player.body.setVelocityY(-200);
-        // this.physics.world.removeCollider(this.platformCollider);
+        this.player.anims.play('gethurt');
+        this.player.body.setVelocityY(-100);
+        this.player.setGravityY(1000);
+        this.player.anims.play('run');
       },
       null,
       this
     );
-  }
 
-  // Platform are added from the pool or created on the fly
-  addPlatform(platformWidth, posX, posY) {
-    let platform;
-    if (this.platformPool.getLength()) {
-      platform = this.platformPool.getFirst();
-      platform.x = posX;
-      platform.active = true;
-      platform.visible = true;
-      this.platformPool.remove(platform);
-    } else {
-      platform = this.physics.add.sprite(posX, posY, 'platform');
-      platform.setImmovable(true);
-      platform.setVelocityX(-350);
-      this.platformGroup.add(platform);
-    }
-    platform.displayWidth = platformWidth;
-    this.nextPlatformDistance = Phaser.Math.Between(110, 300);
+    //add spike on the platform
 
     this.spikePercent = 25;
 
     if (Phaser.Math.Between(1, 100) <= this.spikePercent) {
-      if (this.spikepool.getLength()) {
+      if (this.spikepool?.getLength()) {
         let spike = this.spikepool.getFirst();
         spike.x =
           posX - platformWidth / 2 + Phaser.Math.Between(1, platformWidth);
@@ -145,7 +157,6 @@ export default class GameTest extends Phaser.Scene {
         spike.setImmovable(true);
         spike.setVelocityX(platform.body.velocity.x);
         // spike.setSize(8, 2, true)
-        // spike.anims.play("burn");
         spike.setDepth(2);
         this.spikegroup.add(spike);
       }
@@ -153,7 +164,7 @@ export default class GameTest extends Phaser.Scene {
   }
 
   update() {
-    this.player.x = 200;
+    this.player.x = 300;
 
     //make the background color change
     let hexColor = Phaser.Display.Color.Interpolate.ColorWithColor(
@@ -216,14 +227,18 @@ export default class GameTest extends Phaser.Scene {
       //this.player.anims.play('jump', true);
     }
 
-    //timer
-    this.timer = this.time.now * 0.001;
-    this.timeText.setText('Time Survived: ' + Math.round(this.timer));
-
     //poki die
     if (this.player.y > 450) {
       //this.player.anims.play('die', true);
-      this.scene.start('gameover');
+      this.scene.start('gameover', {
+        timeCounter: this.timeCounter,
+      });
+      this.timeCounter = 0;
     }
+  }
+
+  timerUpdate() {
+    this.timeCounter += 1;
+    this.timeText.setText(`Time Survived: ${this.timeCounter}`);
   }
 }
