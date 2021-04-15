@@ -5,12 +5,14 @@ export default class Gameover extends Phaser.Scene {
   timer: number;
   timeText: any;
   timeCounter: number;
+  deadlineText: any;
   constructor() {
     super('gameover');
   }
 
   init(data) {
     this.timeCounter = data.timeCounter;
+    this.deadlineText = data.deadlineText;
   }
 
   preload() {}
@@ -33,12 +35,13 @@ export default class Gameover extends Phaser.Scene {
         fontSize: '32px',
       })
       .setOrigin(0.5);
-    this.timeText.setText(`Time Survived: ${this.timeCounter}`);
+    this.timeText.setText(`You've escaped from ${this.deadlineText} for ${this.timeCounter} seconds.`);
 
     //add play again option
     this.add
       .text(571, 300, 'Press SPACE to play again!', {
-        fontSize: '32px',
+        fontSize: '28px',
+        color: '0x000000',
       })
       .setOrigin(0.5);
   }

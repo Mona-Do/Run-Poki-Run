@@ -63,9 +63,12 @@ export default class GameScene extends Phaser.Scene {
     this.player.anims.play('run');
 
     //set the spike behind
-    this.spike1 = this.add.image(0, 0, 'spike-behind').setOrigin(0, 0);
-    this.spike1.setScrollFactor(0, 0);
-    this.spike1.depth = 1;
+    // this.spike1 = this.add.image(0, 0, 'spike-behind').setOrigin(0, 0);
+    // this.spike1.setScrollFactor(0, 0);
+    // this.spike1.depth = 1;
+
+    // Add escape text
+    this.addEscapeText();
 
     //set the timer
     this.timeText = this.add.text(900, 20, 'Time Survived:');
@@ -95,21 +98,21 @@ export default class GameScene extends Phaser.Scene {
     // this.platformVerticalLimit = [0.8, 0.4];
     this.addPlatform(width, width / 2, height * 0.8);
     this.physics.add.collider(this.player, this.platformGroup);
-
-    // Add escape text
-    this.addEscapeText();
   }
 
   addEscapeText() {
     for (let index = 0; index < 100; index++) {
-      const x = 10;
+      const x = 20;
       const y = 10 + index * 20;
 
       this.add
         .text(x, y, this.deadlineText, {
-          fontSize: '20px',
+          fontSize: '24px',
+          fontStyle: 'bold',
+          color: '0x000000',
         })
-        .setOrigin(0.5);
+        .setOrigin(0)
+        .setDepth(1);
     }
   }
 
