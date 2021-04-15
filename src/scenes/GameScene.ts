@@ -243,6 +243,7 @@ export default class GameScene extends Phaser.Scene {
         minPlatformHeight,
         maxPlatformHeight
       );
+      console.log(nextPlatformHeight);
       this.addPlatform(nextPlatformWidth, 1142 + nextPlatformWidth / 2, 400);
     }
 

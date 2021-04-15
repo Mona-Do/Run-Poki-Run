@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import GameScene from './GameScene';
 
 export default class Gameover extends Phaser.Scene {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
