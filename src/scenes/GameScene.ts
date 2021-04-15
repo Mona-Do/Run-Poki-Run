@@ -49,6 +49,8 @@ export default class GameScene extends Phaser.Scene {
     this.color1 = new Phaser.Display.Color(105, 59, 76);
     this.color2 = new Phaser.Display.Color(105, 70, 0);
 
+    //set the life bar
+
     //player
     this.player = this.physics.add.sprite(300, 300, 'poki');
     this.player.body.setGravityY(900);
