@@ -1,11 +1,17 @@
 import Phaser from 'phaser';
+import GameScene from './GameScene';
 
 export default class Gameover extends Phaser.Scene {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   timer: number;
   timeText: any;
+  timeCounter: number;
   constructor() {
     super('gameover');
+  }
+
+  init(data) {
+    this.timeCounter = data.timeCounter;
   }
 
   preload() {}
@@ -16,11 +22,19 @@ export default class Gameover extends Phaser.Scene {
 
     //add score board
     // this.add.rectangle(571, 250, 800, 300, 0xffffff, 1).setOrigin(0.5);
-    this.add
-      .text(571, 200, 'Time Survived: ' + this.timer.toString(), {
+    // this.timer = Math.round(this.time.now * 0.001);
+    // this.add
+    //   .text(571, 200, 'Time Survived: ' + this.timer.toString(), {
+    //     fontSize: '32px',
+    //   })
+    //   .setOrigin(0.5);
+
+    this.timeText = this.add
+      .text(571, 200, 'Time Survived:', {
         fontSize: '32px',
       })
       .setOrigin(0.5);
+    this.timeText.setText(`Time Survived: ${this.timeCounter}`);
 
     //add play again option
     this.add
@@ -28,7 +42,6 @@ export default class Gameover extends Phaser.Scene {
         fontSize: '32px',
       })
       .setOrigin(0.5);
-    this.timer = Math.round(this.time.now * 0.001);
   }
 
   update() {

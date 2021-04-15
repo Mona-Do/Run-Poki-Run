@@ -15,7 +15,6 @@ export default class GameScene extends Phaser.Scene {
   spike1: Phaser.GameObjects.Image;
   timeText: Phaser.GameObjects.Text;
   setBackgroundColor: any;
-  timer: number;
   platformHeight: number[];
   platformVerticalLimit: number[];
   clock: any;
@@ -24,6 +23,9 @@ export default class GameScene extends Phaser.Scene {
   spikegroup: Phaser.GameObjects.Group;
   die: Phaser.Scenes.ScenePlugin;
   spikePercent: number;
+  timer: Phaser.Time.TimerEvent;
+  timeCounter: number = 0;
+  static timeCounter: number;
 
   constructor() {
     super('game');
@@ -42,7 +44,7 @@ export default class GameScene extends Phaser.Scene {
       .image(40, 0, 'layer-meme')
       .setOrigin(0, 0)
       .setScrollFactor(0, 0);
-    
+
     // this.background.setVelocityX(-350);
 
     //set the background color
@@ -63,6 +65,12 @@ export default class GameScene extends Phaser.Scene {
     //set the timer - stick to the top right
     this.timeText = this.add.text(900, 20, 'Time Survived:');
     this.timeText.setScrollFactor(0, 0);
+    this.timer = this.time.addEvent({
+      delay: 1000, // ms
+      callback: this.timerUpdate,
+      callbackScope: this,
+      loop: true,
+    });
 
     // create platform group
     this.platformGroup = this.add.group({
@@ -114,7 +122,7 @@ export default class GameScene extends Phaser.Scene {
   // Platform are added from the pool or created on the fly
   addPlatform(platformWidth, posX, posY) {
     let platform;
-    if (this.platformPool.getLength()) {
+    if (this.platformPool?.getLength()) {
       platform = this.platformPool.getFirst();
       platform.x = posX;
       platform.active = true;
@@ -134,7 +142,7 @@ export default class GameScene extends Phaser.Scene {
     this.spikePercent = 25;
 
     if (Phaser.Math.Between(1, 100) <= this.spikePercent) {
-      if (this.spikepool.getLength()) {
+      if (this.spikepool?.getLength()) {
         let spike = this.spikepool.getFirst();
         spike.x =
           posX - platformWidth / 2 + Phaser.Math.Between(1, platformWidth);
@@ -221,14 +229,24 @@ export default class GameScene extends Phaser.Scene {
       //this.player.anims.play('jump', true);
     }
 
-    //timer
-    this.timer = this.time.now * 0.001;
-    this.timeText.setText('Time Survived: ' + Math.round(this.timer));
+    // timer
 
     //poki die
     if (this.player.y > 450) {
       //this.player.anims.play('die', true);
-      this.scene.start('gameover');
+      this.scene.start('gameover',{
+        timeCounter : this.timeCounter
+      });
+      this.timeCounter = 0;
     }
+  }
+
+  timerUpdate() {
+    this.timeCounter += 1;
+    this.timeText.setText(`Time Survived: ${this.timeCounter}`);
+  }
+
+  level2(){
+
   }
 }
