@@ -1,5 +1,8 @@
-import Phaser from 'phaser';
+import 'phaser';
 // import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin';
+// import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin';
+// import RexUIPlugin
+// import 'phaser3-rex-plugins';
 import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin';
 
 import PreloaderScene from './scenes/PreloaderScene';

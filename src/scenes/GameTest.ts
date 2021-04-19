@@ -1,4 +1,3 @@
-import Phaser from 'phaser';
 import createPokiAnims from '../anims/poki.js';
 
 export default class GameTest extends Phaser.Scene {

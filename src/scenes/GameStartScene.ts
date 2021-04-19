@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+
 
 export default class Gamestart extends Phaser.Scene {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
