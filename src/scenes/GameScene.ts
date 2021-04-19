@@ -27,6 +27,10 @@ export default class GameScene extends Phaser.Scene {
   timeCounter: number = 0;
   static timeCounter: number;
   deadlineText: string;
+  life: Phaser.GameObjects.Image;
+  life1: Phaser.GameObjects.Image;
+  life2: Phaser.GameObjects.Image;
+  life3: Phaser.GameObjects.Image;
 
   constructor() {
     super('game');
@@ -55,6 +59,9 @@ export default class GameScene extends Phaser.Scene {
     this.color2 = new Phaser.Display.Color(105, 70, 0);
 
     //set the life bar
+    this.life1 = this.add.image(850, 25, 'life');
+    this.life2 = this.add.image(800, 25, 'life');
+    this.life3 = this.add.image(750, 25, 'life');
 
     //player
     this.player = this.physics.add.sprite(300, 300, 'poki');
