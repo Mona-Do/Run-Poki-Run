@@ -20,5 +20,9 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true
   },
-  "include": ["./src/**/*", "src/utils"]
+  "include": [
+    "./src/**/*",
+    "src/utils",
+    "node_modules/phaser3-rex-plugins-types"
+  ]
 }

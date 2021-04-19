@@ -16,5 +16,8 @@
     "phaser3-rex-plugins": "^1.1.45",
     "typescript": "^4.2.4",
     "vite": "^2.2.1"
+  },
+  "dependencies": {
+    "phaser3-rex-plugins-types": "^0.1.3"
   }
 }
