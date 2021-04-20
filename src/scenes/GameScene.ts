@@ -25,18 +25,10 @@ export default class GameScene extends Phaser.Scene {
   timeCounter: number = 0;
   static timeCounter: number;
   deadlineText: string;
-<<<<<<< HEAD
-  life: Phaser.GameObjects.Image;
-  life1: Phaser.GameObjects.Image;
-  life2: Phaser.GameObjects.Image;
-  life3: Phaser.GameObjects.Image;
-=======
   player: PokiSprite;
 
   spikePercent = 25;
   spikeShowTime = 5;
-  minDistance = 1142;
->>>>>>> defd6ec461fd6e9b59b22ae4fd9975d119e22627
 
   constructor() {
     super('game');
@@ -213,13 +205,12 @@ export default class GameScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(hexColor);
 
     // recycling platforms
-
+    let minDistance = 1142;
     let rightmostPlatformHeight = 0;
     this.platformGroup.getChildren().forEach(function (platform) {
-      let platformDistance =
-        this.minDistance - platform.x - platform.displayWidth / 2;
-      if (platformDistance < this.minDistance) {
-        this.minDistance = platformDistance;
+      let platformDistance = 1142 - platform.x - platform.displayWidth / 2;
+      if (platformDistance < minDistance) {
+        minDistance = platformDistance;
         rightmostPlatformHeight = platform.y;
       }
 
