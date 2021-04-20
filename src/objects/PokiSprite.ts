@@ -6,7 +6,7 @@ export default class PokiSprite extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
-    this.body.setGravityY(900);
+    this.setGravityY(900);
 
     this.createAnims();
     this.anims.play('run');
@@ -28,7 +28,7 @@ export default class PokiSprite extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
-  getHurt(player, _spike) {
+  getHurt(player: { anims: { play: (arg0: string) => void; }; body: { setVelocityY: (arg0: number) => void; }; setGravityY: (arg0: number) => void; }, _spike: any) {
     player.anims.play('gethurt');
     player.body.setVelocityY(-200);
     player.setGravityY(1000);

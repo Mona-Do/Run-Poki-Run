@@ -56,10 +56,10 @@ export default class GameScene extends Phaser.Scene {
     this.color1 = new Phaser.Display.Color(105, 59, 76);
     this.color2 = new Phaser.Display.Color(105, 70, 0);
 
-    //set the life bar
-    this.life1 = this.add.image(850, 25, 'life');
-    this.life2 = this.add.image(800, 25, 'life');
-    this.life3 = this.add.image(750, 25, 'life');
+    // //set the life bar
+    // this.life1 = this.add.image(850, 25, 'life');
+    // this.life2 = this.add.image(800, 25, 'life');
+    // this.life3 = this.add.image(750, 25, 'life');
 
     //player
     this.player = new PokiSprite(this);
