@@ -1,10 +1,9 @@
-import Phaser from 'phaser';
-import createPokiAnims from '../anims/poki.js';
+import PokiSprite from '../objects/PokiSprite';
 
 export default class GameScene extends Phaser.Scene {
   color1: Phaser.Display.Color;
   color2: Phaser.Display.Color;
-  player: any;
+
   platformGroup: Phaser.GameObjects.Group;
   platformPool: Phaser.GameObjects.Group;
   nextPlatformDistance: number;
@@ -22,15 +21,22 @@ export default class GameScene extends Phaser.Scene {
   spikepool: Phaser.GameObjects.Group;
   spikegroup: Phaser.GameObjects.Group;
   die: Phaser.Scenes.ScenePlugin;
-  spikePercent: number;
   timer: Phaser.Time.TimerEvent;
   timeCounter: number = 0;
   static timeCounter: number;
   deadlineText: string;
+<<<<<<< HEAD
   life: Phaser.GameObjects.Image;
   life1: Phaser.GameObjects.Image;
   life2: Phaser.GameObjects.Image;
   life3: Phaser.GameObjects.Image;
+=======
+  player: PokiSprite;
+
+  spikePercent = 25;
+  spikeShowTime = 5;
+  minDistance = 1142;
+>>>>>>> defd6ec461fd6e9b59b22ae4fd9975d119e22627
 
   constructor() {
     super('game');
@@ -64,10 +70,12 @@ export default class GameScene extends Phaser.Scene {
     this.life3 = this.add.image(750, 25, 'life');
 
     //player
-    this.player = this.physics.add.sprite(300, 300, 'poki');
-    this.player.body.setGravityY(900);
-    createPokiAnims(this.anims);
-    this.player.anims.play('run');
+    this.player = new PokiSprite(this);
+
+    // this.player = this.physics.add.sprite(300, 300, 'poki');
+    // this.player.body.setGravityY(900);
+    // createPokiAnims(this.anims);
+    // this.player.anims.play('run');
 
     //set the spike behind
     // this.spike1 = this.add.image(0, 0, 'spike-behind').setOrigin(0, 0);
@@ -89,14 +97,14 @@ export default class GameScene extends Phaser.Scene {
 
     // create platform group
     this.platformGroup = this.add.group({
-      removeCallback: function (platform) {
+      removeCallback: (platform) => {
         platform.scene.platformPool.add(platform);
       },
     });
 
     // create platform pool
     this.platformPool = this.add.group({
-      removeCallback: function (platform: Phaser.Physics.Arcade.Sprite) {
+      removeCallback: (platform) => {
         platform.scene.platformGroup.add(platform);
       },
     });
@@ -147,6 +155,7 @@ export default class GameScene extends Phaser.Scene {
         spike.scene.spikepool.add(spike);
       },
     });
+
     this.spikepool = this.add.group({
       removeCallback: function (spike) {
         spike.scene.spikegroup.add(spike);
@@ -157,23 +166,15 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.overlap(
       this.player,
       this.spikegroup,
-      function () {
-        this.gethurt = true;
-        this.player.anims.play('gethurt');
-        this.player.body.setVelocityY(-100);
-        this.player.setGravityY(1000);
-        this.player.anims.play('run');
-      },
-      null,
+      this.player.getHurt,
+      undefined,
       this
     );
 
     //add spike on the platform
 
-    this.spikePercent = 25;
-
     if (
-      this.timeCounter > 20 &&
+      this.timeCounter > this.spikeShowTime &&
       Phaser.Math.Between(1, 100) <= this.spikePercent
     ) {
       if (this.spikepool?.getLength()) {
@@ -212,12 +213,13 @@ export default class GameScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(hexColor);
 
     // recycling platforms
-    let minDistance = 1142;
+
     let rightmostPlatformHeight = 0;
     this.platformGroup.getChildren().forEach(function (platform) {
-      let platformDistance = 1142 - platform.x - platform.displayWidth / 2;
-      if (platformDistance < minDistance) {
-        minDistance = platformDistance;
+      let platformDistance =
+        this.minDistance - platform.x - platform.displayWidth / 2;
+      if (platformDistance < this.minDistance) {
+        this.minDistance = platformDistance;
         rightmostPlatformHeight = platform.y;
       }
 

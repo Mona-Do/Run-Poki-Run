@@ -1,5 +1,4 @@
-import Phaser from 'phaser';
-// import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin';
+import 'phaser';
 import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin';
 
 import PreloaderScene from './scenes/PreloaderScene';
@@ -7,7 +6,6 @@ import GameScene from './scenes/GameScene';
 import GameoverScene from './scenes/GameOverScene';
 import GameStartScene from './scenes/GameStartScene';
 import GameOpenScene from './scenes/GameOpenScene';
-import GameTest from './scenes/GameTest';
 
 const config = {
   type: Phaser.AUTO,
@@ -39,7 +37,6 @@ const config = {
     GameStartScene,
     GameOpenScene,
     GameScene,
-    GameTest,
     GameoverScene,
   ],
 };
