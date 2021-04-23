@@ -29,6 +29,7 @@ export default class GameScene extends Phaser.Scene {
 
   spikePercent = 25;
   spikeShowTime = 5;
+  bgMusic: Phaser.Sound.BaseSound;
 
   constructor() {
     super('game');
@@ -86,6 +87,10 @@ export default class GameScene extends Phaser.Scene {
       callbackScope: this,
       loop: true,
     });
+
+    //add background music
+    this.bgMusic = this.sound.add('background', { loop: true });
+    this.bgMusic.play();
 
     // create platform group
     this.platformGroup = this.add.group({
@@ -250,16 +255,17 @@ export default class GameScene extends Phaser.Scene {
       this.addPlatform(nextPlatformWidth, 1142 + nextPlatformWidth / 2, 400);
     }
 
-    //poki move
+    //run
     this.cursors = this.input.keyboard.createCursorKeys();
     if (this.cursors.space?.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-400);
       //this.player.anims.play('jump', true);
     }
 
-    //poki die
+    //game over
     if (this.player.y > 450) {
       //this.player.anims.play('die', true);
+      this.bgMusic.stop();
       this.scene.start('gameover', {
         timeCounter: this.timeCounter,
         deadlineText: this.deadlineText,

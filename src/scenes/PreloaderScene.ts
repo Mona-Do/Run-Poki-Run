@@ -1,5 +1,3 @@
-
-
 export default class Preloader extends Phaser.Scene {
   constructor() {
     super('preloader');
@@ -26,6 +24,7 @@ export default class Preloader extends Phaser.Scene {
       frameWidth: 60,
       frameHeight: 40,
     });
+    this.load.audio('background', ['assets/audio/background.mp3']);
   }
 
   create() {
