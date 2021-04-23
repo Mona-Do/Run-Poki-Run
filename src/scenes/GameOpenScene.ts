@@ -16,7 +16,7 @@ export default class GameOpen extends Phaser.Scene {
   create() {
     this.add.image(0, 0, 'deadline-select').setOrigin(0);
 
-    this.deadlineText = this.add.text(571, 220, 'click to type in', {
+    this.deadlineText = this.add.text(571, 220, 'double-click to type', {
       fixedHeight: 36,
     });
     this.deadlineText.setOrigin(0.5);
