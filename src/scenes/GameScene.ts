@@ -1,9 +1,6 @@
 import PokiSprite from '../objects/PokiSprite';
 
 export default class GameScene extends Phaser.Scene {
-  color1: Phaser.Display.Color;
-  color2: Phaser.Display.Color;
-
   platformGroup: Phaser.GameObjects.Group;
   platformPool: Phaser.GameObjects.Group;
   nextPlatformDistance: number;
@@ -28,7 +25,8 @@ export default class GameScene extends Phaser.Scene {
   player: PokiSprite;
 
   spikePercent = 25;
-  spikeShowTime = 5;
+  spikeShowTime = 20;
+  platformChangeTime = 10;
   bgMusic: Phaser.Sound.BaseSound;
 
   constructor() {
@@ -45,37 +43,18 @@ export default class GameScene extends Phaser.Scene {
 
   create() {
     //background
-    //make the layer-meme repeat
-    let width = this.scale.width;
-    let height = this.scale.height;
+    this.cameras.main.setBackgroundColor(0x693b4c);
+    const width = this.scale.width;
+    const height = this.scale.height;
     this.background = this.add
       .image(40, 0, 'layer-meme')
       .setOrigin(0, 0)
       .setScrollFactor(0, 0);
 
-    //set the background color
-    this.color1 = new Phaser.Display.Color(105, 59, 76);
-    this.color2 = new Phaser.Display.Color(105, 70, 0);
-
-    // //set the life bar
-    // this.life1 = this.add.image(850, 25, 'life');
-    // this.life2 = this.add.image(800, 25, 'life');
-    // this.life3 = this.add.image(750, 25, 'life');
-
     //player
     this.player = new PokiSprite(this);
 
-    // this.player = this.physics.add.sprite(300, 300, 'poki');
-    // this.player.body.setGravityY(900);
-    // createPokiAnims(this.anims);
-    // this.player.anims.play('run');
-
-    //set the spike behind
-    // this.spike1 = this.add.image(0, 0, 'spike-behind').setOrigin(0, 0);
-    // this.spike1.setScrollFactor(0, 0);
-    // this.spike1.depth = 1;
-
-    // Add escape text
+    // Add deadline text
     this.addEscapeText();
 
     //set the timer
@@ -92,14 +71,14 @@ export default class GameScene extends Phaser.Scene {
     this.bgMusic = this.sound.add('background', { loop: true });
     this.bgMusic.play();
 
-    // create platform group
+    // create platform group - the visible parts on the screen
     this.platformGroup = this.add.group({
       removeCallback: (platform) => {
         platform.scene.platformPool.add(platform);
       },
     });
 
-    // create platform pool
+    // create platform pool - the invisible parts out of screen
     this.platformPool = this.add.group({
       removeCallback: (platform) => {
         platform.scene.platformGroup.add(platform);
@@ -107,11 +86,12 @@ export default class GameScene extends Phaser.Scene {
     });
 
     // add the initial platform
-    // this.platformVerticalLimit = [0.8, 0.4];
+    this.platformVerticalLimit = [0.8, 0.4];
     this.addPlatform(width, width / 2, height * 0.8);
     this.physics.add.collider(this.player, this.platformGroup);
   }
 
+  //repeat the deadline text on the left side
   addEscapeText() {
     for (let index = 0; index < 100; index++) {
       const x = 20;
@@ -131,6 +111,7 @@ export default class GameScene extends Phaser.Scene {
   // Platform are added from the pool or created on the fly
   addPlatform(platformWidth: number, posX: number, posY: number) {
     let platform;
+    //if there is at least one platform in the pool, make the first one visible
     if (this.platformPool?.getLength()) {
       platform = this.platformPool.getFirst();
       platform.x = posX;
@@ -168,6 +149,10 @@ export default class GameScene extends Phaser.Scene {
       this
     );
 
+    if (this.player.anims.play('gethurt')) {
+      this.player.anims.play('run');
+    }
+
     //add spike on the platform
 
     if (
@@ -176,15 +161,16 @@ export default class GameScene extends Phaser.Scene {
     ) {
       if (this.spikepool?.getLength()) {
         let spike = this.spikepool.getFirst();
-        spike.x =
-          posX - platformWidth / 2 + Phaser.Math.Between(1, platformWidth);
+        spike.x = posX - platformWidth;
+        // posX - platformWidth / 2 + Phaser.Math.Between(1, platformWidth);
         spike.y = posY - 15;
         spike.active = true;
         spike.visible = true;
         this.spikepool.remove(spike);
       } else {
         let spike = this.physics.add.sprite(
-          posX - platformWidth / 2 + Phaser.Math.Between(1, platformWidth),
+          posX,
+          // posX - platformWidth / 2 + Phaser.Math.Between(1, platformWidth),
           posY - 15,
           'spike-single'
         );
@@ -199,15 +185,6 @@ export default class GameScene extends Phaser.Scene {
 
   update() {
     this.player.x = 300;
-
-    //make the background color change
-    let hexColor = Phaser.Display.Color.Interpolate.ColorWithColor(
-      this.color1,
-      this.color2,
-      100,
-      1
-    );
-    this.cameras.main.setBackgroundColor(hexColor);
 
     // recycling platforms
     let minDistance = 1142;
@@ -235,14 +212,13 @@ export default class GameScene extends Phaser.Scene {
 
     // adding new platforms
     if (minDistance > this.nextPlatformDistance) {
-      this.platformSizeRange = [100, 250];
+      this.platformSizeRange = [100, 300];
       let nextPlatformWidth = Phaser.Math.Between(
         this.platformSizeRange[0],
         this.platformSizeRange[1]
       );
 
       let platformRandomHeight = 10 * Phaser.Math.Between(10, -10);
-      // console.log(rightmostPlatformHeight);
       let nextPlatformGap = rightmostPlatformHeight + platformRandomHeight;
       let minPlatformHeight = 500 * 0.6;
       let maxPlatformHeight = 500 * 0.8;
@@ -251,11 +227,27 @@ export default class GameScene extends Phaser.Scene {
         minPlatformHeight,
         maxPlatformHeight
       );
-      console.log(nextPlatformHeight);
-      this.addPlatform(nextPlatformWidth, 1142 + nextPlatformWidth / 2, 400);
+      this.addPlatform(
+        nextPlatformWidth,
+        1142 + nextPlatformWidth / 2,
+        nextPlatformHeight
+      );
+      // if (this.timeCounter <= this.platformChangeTime) {
+      //   this.addPlatform(
+      //   nextPlatformWidth,
+      //   1142 + nextPlatformWidth / 2,
+      //   400)
+      // } else {
+      // this.addPlatform(
+      //   nextPlatformWidth,
+      //   1142 + nextPlatformWidth / 2,
+      //   nextPlatformHeight
+      // );
+      // console.log(nextPlatformHeight);
+      // }
     }
 
-    //run
+    //jump
     this.cursors = this.input.keyboard.createCursorKeys();
     if (this.cursors.space?.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-400);

@@ -10,7 +10,7 @@ export default class PokiSprite extends Phaser.Physics.Arcade.Sprite {
 
     this.createAnims();
     this.anims.play('run');
-    
+
   }
 
 
@@ -25,18 +25,18 @@ export default class PokiSprite extends Phaser.Physics.Arcade.Sprite {
     this.anims.create({
       key: 'gethurt',
       frames: [{ key: 'poki', frame: '5' }],
-      duration: 1000,
+      duration: 200,
       repeat: 0,
     });
+
   }
 
 
 
   getHurt(player: { anims: { play: (arg0: string) => void; }; body: { setVelocityY: (arg0: number) => void; }; setGravityY: (arg0: number) => void; }, _spike: any) {
     player.anims.play('gethurt');
-    player.body.setVelocityY(-200);
+    // player.body.setVelocityY(-200);
     player.setGravityY(1000);
-    // TODO: delay this animation
-    // player.anims.play('run');
+
   }
 }
