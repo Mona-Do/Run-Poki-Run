@@ -10,7 +10,7 @@ export default class Gameover extends Phaser.Scene {
     super('gameover');
   }
 
-  init(data) {
+  init(data: { timeCounter: number; deadlineText: any; }) {
     this.timeCounter = data.timeCounter;
     this.deadlineText = data.deadlineText;
   }
