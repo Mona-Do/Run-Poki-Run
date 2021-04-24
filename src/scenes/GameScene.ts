@@ -24,10 +24,9 @@ export default class GameScene extends Phaser.Scene {
   deadlineText: string;
   player: PokiSprite;
 
-  spikePercent = 75;
-  spikeShowTime = 5;
-  platformChangeTime = 10;
+  platformChangeTime = 5;
   bgMusic: Phaser.Sound.BaseSound;
+  speedChangeTime = 25;
 
   constructor() {
     super('game');
@@ -85,7 +84,7 @@ export default class GameScene extends Phaser.Scene {
 
     // add the initial platform
     this.platformVerticalLimit = [0.8, 0.4];
-    this.addPlatform(width, width / 2, height * 0.8);
+    this.addPlatform(width, width / 2, height * 0.8, -350);
 
     //add deadline text
     this.addEscapeText();
@@ -109,7 +108,12 @@ export default class GameScene extends Phaser.Scene {
   }
 
   // Platform are added from the pool
-  addPlatform(platformWidth: number, posX: number, posY: number) {
+  addPlatform(
+    platformWidth: number,
+    posX: number,
+    posY: number,
+    speed: number
+  ) {
     let platform;
     //if there is at least one platform in the pool, make the first one visible
     if (this.platformPool?.getLength()) {
@@ -121,67 +125,12 @@ export default class GameScene extends Phaser.Scene {
     } else {
       platform = this.physics.add.sprite(posX, posY, 'platform');
       platform.setImmovable(true);
-      platform.setVelocityX(-350);
+      platform.setVelocityX(speed);
       this.platformGroup.add(platform);
     }
     platform.displayWidth = platformWidth;
     //platform distance setting
     this.nextPlatformDistance = Phaser.Math.Between(110, 280);
-
-
-    //create spike group and pool
-    this.spikeGroup = this.add.group({
-      removeCallback: (spike) => {
-        this.spikePool.add(spike);
-      },
-    });
-
-    this.spikePool = this.add.group({
-      removeCallback: (spike) => {
-        this.spikeGroup.add(spike);
-      },
-    });
-
-    // // collide with spikes
-    // this.physics.add.overlap(
-    //   this.player,
-    //   this.spikeGroup,
-    //   this.player.getHurt,
-    //   undefined,
-    //   this
-    // );
-
-    // if (this.player.anims.play('gethurt')) {
-    //   this.player.anims.play('run');
-    // }
-
-    //add spike on the platform
-    if (
-      this.timeCounter > this.spikeShowTime &&
-      Phaser.Math.Between(1, 100) <= this.spikePercent
-    ) {
-      if (this.spikePool?.getLength()) {
-        let spike = this.spikePool.getFirst();
-        spike.x = posX - platformWidth / 2;
-        // posX - platformWidth / 2 + Phaser.Math.Between(1, platformWidth);
-        spike.y = posY - 15;
-        spike.active = true;
-        spike.visible = true;
-        this.spikePool.remove(spike);
-      } else {
-        let spike = this.physics.add.sprite(
-          posX - platformWidth / 2,
-          // posX - platformWidth / 2 + Phaser.Math.Between(1, platformWidth),
-          posY - 15,
-          'spike-single'
-        );
-        spike.setImmovable(true);
-        spike.setVelocityX(platform.body.velocity.x);
-        // // spike.setSize(8, 2, true)
-        spike.setDepth(2);
-        this.spikeGroup.add(spike);
-      }
-    }
   }
 
   update() {
@@ -190,7 +139,7 @@ export default class GameScene extends Phaser.Scene {
     // recycling platforms
     let minDistance = 1142;
     let rightmostPlatformHeight = 0;
-    this.platformGroup.getChildren().forEach(function (platform) {
+    this.platformGroup.getChildren().forEach((platform) => {
       let platformDistance = 1142 - platform.x - platform.displayWidth / 2;
       if (platformDistance < minDistance) {
         minDistance = platformDistance;
@@ -203,48 +152,49 @@ export default class GameScene extends Phaser.Scene {
       }
     }, this);
 
-    //recycle spikes
-    this.spikeGroup.getChildren().forEach(function (spike) {
-      if (spike.x < -spike.displayWidth / 2) {
-        this.spikegroup.killAndHide(spike);
-        this.spikegroup.remove(spike);
-      }
-    }, this);
-
     // adding new platforms
     if (minDistance > this.nextPlatformDistance) {
-      this.platformSizeRange = [100, 300];
-      let nextPlatformWidth = Phaser.Math.Between(
-        this.platformSizeRange[0],
-        this.platformSizeRange[1]
-      );
-
-      let platformRandomHeight = 10 * Phaser.Math.Between(10, -10);
-      let nextPlatformGap = rightmostPlatformHeight + platformRandomHeight;
-      let minPlatformHeight = 500 * 0.6;
+      let nextPlatformWidth = Phaser.Math.Between(100, 300);
+      // let platformRandomHeight = 10 * Phaser.Math.Between(10, -10);
+      // let nextPlatformGap = rightmostPlatformHeight + platformRandomHeight;
+      let minPlatformHeight = 500 * 0.65;
       let maxPlatformHeight = 500 * 0.8;
-      let nextPlatformHeight = Phaser.Math.Clamp(
-        nextPlatformGap,
+      let nextPlatformHeight = Phaser.Math.Between(
         minPlatformHeight,
         maxPlatformHeight
       );
-      this.addPlatform(
-        nextPlatformWidth,
-        1142 + nextPlatformWidth / 2,
-        nextPlatformHeight
-      );
-      // if (this.timeCounter <= this.platformChangeTime) {
-      //   this.addPlatform(
-      //   nextPlatformWidth,
-      //   1142 + nextPlatformWidth / 2,
-      //   400)
-      // } else {
-      // this.addPlatform(
-      //   nextPlatformWidth,
-      //   1142 + nextPlatformWidth / 2,
-      //   nextPlatformHeight
+      // let nextPlatformHeight = Phaser.Math.Clamp(
+      //   nextPlatformGap,
+      //   minPlatformHeight,
+      //   maxPlatformHeight
       // );
-      console.log(nextPlatformHeight);
+
+      if (this.timeCounter <= this.platformChangeTime) {
+        this.addPlatform(
+          nextPlatformWidth,
+          1142 + nextPlatformWidth / 2,
+          nextPlatformHeight,
+          -350
+        );
+        console.log(nextPlatformHeight);
+      }
+      if (this.timeCounter > this.platformChangeTime) {
+        this.addPlatform(
+          nextPlatformWidth,
+          1142 + nextPlatformWidth / 2,
+          nextPlatformHeight,
+          -350
+        );
+      }
+
+      // //change game speed
+      // if (this.timeCounter > this.speedChangeTime) {
+      //   this.addPlatform(
+      //     nextPlatformWidth,
+      //     1142 + nextPlatformWidth / 2,
+      //     nextPlatformHeight,
+      //     -500
+      //   );
       // }
     }
 
@@ -252,7 +202,6 @@ export default class GameScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
     if (this.cursors.space?.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-400);
-      //this.player.anims.play('jump', true);
     }
 
     //game over
@@ -272,7 +221,3 @@ export default class GameScene extends Phaser.Scene {
     this.timeText.setText(`Time Survived: ${this.timeCounter}`);
   }
 }
-function _spike(player: PokiSprite, _spike: any): ArcadePhysicsCallback | undefined {
-  throw new Error('Function not implemented.');
-}
-
