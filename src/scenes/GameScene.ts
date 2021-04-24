@@ -15,8 +15,8 @@ export default class GameScene extends Phaser.Scene {
   platformVerticalLimit: number[];
   clock: any;
   background: any;
-  spikepool: Phaser.GameObjects.Group;
-  spikegroup: Phaser.GameObjects.Group;
+  spikePool: Phaser.GameObjects.Group;
+  spikeGroup: Phaser.GameObjects.Group;
   die: Phaser.Scenes.ScenePlugin;
   timer: Phaser.Time.TimerEvent;
   timeCounter: number = 0;
@@ -24,8 +24,8 @@ export default class GameScene extends Phaser.Scene {
   deadlineText: string;
   player: PokiSprite;
 
-  spikePercent = 25;
-  spikeShowTime = 20;
+  spikePercent = 75;
+  spikeShowTime = 5;
   platformChangeTime = 10;
   bgMusic: Phaser.Sound.BaseSound;
 
@@ -42,7 +42,7 @@ export default class GameScene extends Phaser.Scene {
   preload() {}
 
   create() {
-    //background
+    //set the background color and layer
     this.cameras.main.setBackgroundColor(0x693b4c);
     const width = this.scale.width;
     const height = this.scale.height;
@@ -51,11 +51,8 @@ export default class GameScene extends Phaser.Scene {
       .setOrigin(0, 0)
       .setScrollFactor(0, 0);
 
-    //player
+    //add player
     this.player = new PokiSprite(this);
-
-    // Add deadline text
-    this.addEscapeText();
 
     //set the timer
     this.timeText = this.add.text(900, 20, 'Time Survived:');
@@ -74,21 +71,24 @@ export default class GameScene extends Phaser.Scene {
     // create platform group - the visible parts on the screen
     this.platformGroup = this.add.group({
       removeCallback: (platform) => {
-        platform.scene.platformPool.add(platform);
+        this.platformPool.add(platform);
       },
     });
+    this.physics.add.collider(this.player, this.platformGroup);
 
     // create platform pool - the invisible parts out of screen
     this.platformPool = this.add.group({
       removeCallback: (platform) => {
-        platform.scene.platformGroup.add(platform);
+        this.platformGroup.add(platform);
       },
     });
 
     // add the initial platform
     this.platformVerticalLimit = [0.8, 0.4];
     this.addPlatform(width, width / 2, height * 0.8);
-    this.physics.add.collider(this.player, this.platformGroup);
+
+    //add deadline text
+    this.addEscapeText();
   }
 
   //repeat the deadline text on the left side
@@ -108,7 +108,7 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
-  // Platform are added from the pool or created on the fly
+  // Platform are added from the pool
   addPlatform(platformWidth: number, posX: number, posY: number) {
     let platform;
     //if there is at least one platform in the pool, make the first one visible
@@ -125,60 +125,61 @@ export default class GameScene extends Phaser.Scene {
       this.platformGroup.add(platform);
     }
     platform.displayWidth = platformWidth;
-    this.nextPlatformDistance = Phaser.Math.Between(110, 300);
+    //platform distance setting
+    this.nextPlatformDistance = Phaser.Math.Between(110, 280);
+
 
     //create spike group and pool
-    this.spikegroup = this.add.group({
-      removeCallback: function (spike) {
-        spike.scene.spikepool.add(spike);
+    this.spikeGroup = this.add.group({
+      removeCallback: (spike) => {
+        this.spikePool.add(spike);
       },
     });
 
-    this.spikepool = this.add.group({
-      removeCallback: function (spike) {
-        spike.scene.spikegroup.add(spike);
+    this.spikePool = this.add.group({
+      removeCallback: (spike) => {
+        this.spikeGroup.add(spike);
       },
     });
 
-    // collide with spikes
-    this.physics.add.overlap(
-      this.player,
-      this.spikegroup,
-      this.player.getHurt,
-      undefined,
-      this
-    );
+    // // collide with spikes
+    // this.physics.add.overlap(
+    //   this.player,
+    //   this.spikeGroup,
+    //   this.player.getHurt,
+    //   undefined,
+    //   this
+    // );
 
-    if (this.player.anims.play('gethurt')) {
-      this.player.anims.play('run');
-    }
+    // if (this.player.anims.play('gethurt')) {
+    //   this.player.anims.play('run');
+    // }
 
     //add spike on the platform
-
     if (
       this.timeCounter > this.spikeShowTime &&
       Phaser.Math.Between(1, 100) <= this.spikePercent
     ) {
-      if (this.spikepool?.getLength()) {
-        let spike = this.spikepool.getFirst();
-        spike.x = posX - platformWidth;
+      if (this.spikePool?.getLength()) {
+        let spike = this.spikePool.getFirst();
+        spike.x = posX - platformWidth / 2;
         // posX - platformWidth / 2 + Phaser.Math.Between(1, platformWidth);
         spike.y = posY - 15;
         spike.active = true;
         spike.visible = true;
-        this.spikepool.remove(spike);
+        this.spikePool.remove(spike);
       } else {
         let spike = this.physics.add.sprite(
-          posX,
+          posX - platformWidth / 2,
           // posX - platformWidth / 2 + Phaser.Math.Between(1, platformWidth),
           posY - 15,
           'spike-single'
         );
         spike.setImmovable(true);
         spike.setVelocityX(platform.body.velocity.x);
-        // spike.setSize(8, 2, true)
+        // // spike.setSize(8, 2, true)
         spike.setDepth(2);
-        this.spikegroup.add(spike);
+        this.spikeGroup.add(spike);
       }
     }
   }
@@ -203,7 +204,7 @@ export default class GameScene extends Phaser.Scene {
     }, this);
 
     //recycle spikes
-    this.spikegroup.getChildren().forEach(function (spike) {
+    this.spikeGroup.getChildren().forEach(function (spike) {
       if (spike.x < -spike.displayWidth / 2) {
         this.spikegroup.killAndHide(spike);
         this.spikegroup.remove(spike);
@@ -243,7 +244,7 @@ export default class GameScene extends Phaser.Scene {
       //   1142 + nextPlatformWidth / 2,
       //   nextPlatformHeight
       // );
-      // console.log(nextPlatformHeight);
+      console.log(nextPlatformHeight);
       // }
     }
 
@@ -271,3 +272,7 @@ export default class GameScene extends Phaser.Scene {
     this.timeText.setText(`Time Survived: ${this.timeCounter}`);
   }
 }
+function _spike(player: PokiSprite, _spike: any): ArcadePhysicsCallback | undefined {
+  throw new Error('Function not implemented.');
+}
+
