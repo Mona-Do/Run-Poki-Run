@@ -24,7 +24,7 @@ export default class GameScene extends Phaser.Scene {
   deadlineText: string;
   player: PokiSprite;
 
-  platformChangeTime = 5;
+  platformChangeTime = 2;
   bgMusic: Phaser.Sound.BaseSound;
   speedChangeTime = 25;
 
@@ -119,10 +119,12 @@ export default class GameScene extends Phaser.Scene {
     if (this.platformPool?.getLength()) {
       platform = this.platformPool.getFirst();
       platform.x = posX;
+      platform.y = posY;
       platform.active = true;
       platform.visible = true;
       this.platformPool.remove(platform);
     } else {
+      console.log('here', posY);
       platform = this.physics.add.sprite(posX, posY, 'platform');
       platform.setImmovable(true);
       platform.setVelocityX(speed);
@@ -154,38 +156,29 @@ export default class GameScene extends Phaser.Scene {
 
     // adding new platforms
     if (minDistance > this.nextPlatformDistance) {
-      let nextPlatformWidth = Phaser.Math.Between(100, 300);
       // let platformRandomHeight = 10 * Phaser.Math.Between(10, -10);
       // let nextPlatformGap = rightmostPlatformHeight + platformRandomHeight;
-      let minPlatformHeight = 500 * 0.65;
-      let maxPlatformHeight = 500 * 0.8;
-      let nextPlatformHeight = Phaser.Math.Between(
-        minPlatformHeight,
-        maxPlatformHeight
-      );
+
       // let nextPlatformHeight = Phaser.Math.Clamp(
       //   nextPlatformGap,
       //   minPlatformHeight,
       //   maxPlatformHeight
       // );
 
-      if (this.timeCounter <= this.platformChangeTime) {
-        this.addPlatform(
-          nextPlatformWidth,
-          1142 + nextPlatformWidth / 2,
-          nextPlatformHeight,
-          -350
-        );
-        console.log(nextPlatformHeight);
+      console.log(this.timeCounter, this.platformChangeTime);
+      let nextPlatformWidth = Phaser.Math.Between(100, 300);
+      let minPlatformHeight = 500 * 0.65;
+      let maxPlatformHeight = 500 * 0.8;
+      let posY = 400;
+      let posX = 1142 + nextPlatformWidth / 2;
+      let speed = -350;
+
+      if (this.timeCounter > 2) {
+        posY = Phaser.Math.Between(minPlatformHeight, maxPlatformHeight);
       }
-      if (this.timeCounter > this.platformChangeTime) {
-        this.addPlatform(
-          nextPlatformWidth,
-          1142 + nextPlatformWidth / 2,
-          nextPlatformHeight,
-          -350
-        );
-      }
+
+      this.addPlatform(nextPlatformWidth, posX, posY, speed);
+      console.log(posY);
 
       // //change game speed
       // if (this.timeCounter > this.speedChangeTime) {

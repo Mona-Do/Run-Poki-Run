@@ -9,8 +9,15 @@ import GameOpenScene from './scenes/GameOpenScene';
 
 const config = {
   type: Phaser.AUTO,
-  width: 1142,
-  height: 500,
+  // width: 1142,
+  // height: 500,
+  scale: {
+    mode: Phaser.Scale.FIT,
+    parent: 'phaser-example',
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: 1142,
+    height: 500,
+  },
   physics: {
     default: 'arcade',
     arcade: {
@@ -31,7 +38,7 @@ const config = {
       },
     ],
   },
-  //backgroundColor: '#693B4C',
+  backgroundColor: '#693B4C',
   scene: [
     PreloaderScene,
     GameStartScene,
