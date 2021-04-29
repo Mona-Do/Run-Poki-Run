@@ -18,6 +18,8 @@ export default class GameScene extends Phaser.Scene {
   bgMusic: Phaser.Sound.BaseSound;
   jumpMusic: Phaser.Sound.BaseSound;
   overMusic: Phaser.Sound.BaseSound;
+  speedControl: Phaser.Time.TimerEvent;
+  speedChange: number = -350;
 
   constructor() {
     super('game');
@@ -162,14 +164,17 @@ export default class GameScene extends Phaser.Scene {
         posY = Phaser.Math.Between(minPlatformHeight, maxPlatformHeight);
         speed = -350;
       }
-      if (this.timeCounter > 20 && this.timeCounter <= 30) {
+      if (this.timeCounter > 20) {
         posY = Phaser.Math.Between(minPlatformHeight, maxPlatformHeight);
-        speed = -400;
+        this.speedControl = this.time.addEvent({
+          delay: 1000, // ms
+          callback: this.speedUpdate,
+          callbackScope: this,
+          loop: true,
+        });
+        speed = this.speedChange;
       }
-      if (this.timeCounter > 30) {
-        posY = Phaser.Math.Between(minPlatformHeight, maxPlatformHeight);
-        speed = -450;
-      }
+      console.log(speed);
 
       this.addPlatform(nextPlatformWidth, posX, posY, speed);
     }
@@ -192,8 +197,13 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
+
   timerUpdate() {
     this.timeCounter += 1;
     this.timeText.setText(`Time Survived: ${this.timeCounter}`);
+  }
+
+  speedUpdate() {
+    this.speedChange += -10;
   }
 }
