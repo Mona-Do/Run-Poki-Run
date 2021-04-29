@@ -167,7 +167,7 @@ export default class GameScene extends Phaser.Scene {
       if (this.timeCounter > 20) {
         posY = Phaser.Math.Between(minPlatformHeight, maxPlatformHeight);
         this.speedControl = this.time.addEvent({
-          delay: 1000, // ms
+          delay: 5000, // ms
           callback: this.speedUpdate,
           callbackScope: this,
           loop: true,
@@ -204,6 +204,6 @@ export default class GameScene extends Phaser.Scene {
   }
 
   speedUpdate() {
-    this.speedChange += -10;
+    this.speedChange += -5;
   }
 }
