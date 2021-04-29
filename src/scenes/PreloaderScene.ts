@@ -16,14 +16,14 @@ export default class Preloader extends Phaser.Scene {
       frameWidth: 86,
       frameHeight: 64,
     });
-    this.load.spritesheet('spike-single', 'assets/img/spike-single.png', {
-      frameWidth: 30,
-      frameHeight: 40,
-    });
-    this.load.spritesheet('spike-double', 'assets/img/spike-double.png', {
-      frameWidth: 60,
-      frameHeight: 40,
-    });
+    // this.load.spritesheet('spike-single', 'assets/img/spike-single.png', {
+    //   frameWidth: 30,
+    //   frameHeight: 40,
+    // });
+    // this.load.spritesheet('spike-double', 'assets/img/spike-double.png', {
+    //   frameWidth: 60,
+    //   frameHeight: 40,
+    // });
     this.load.audio('background', ['assets/audio/background.mp3']);
     this.load.audio('start', ['assets/audio/start.mp3']);
     this.load.audio('jump', ['assets/audio/jump.mp3']);

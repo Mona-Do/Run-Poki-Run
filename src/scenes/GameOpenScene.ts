@@ -1,4 +1,3 @@
-
 // import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin';
 
 export default class GameOpen extends Phaser.Scene {
@@ -45,7 +44,7 @@ export default class GameOpen extends Phaser.Scene {
       .setOrigin(0.5);
 
     //add bg music
-      this.startMusic = this.sound.add('start', { loop: true });
+    this.startMusic = this.sound.add('start', { loop: true });
     this.startMusic.play();
   }
 

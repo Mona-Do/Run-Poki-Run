@@ -5,28 +5,22 @@ export default class GameScene extends Phaser.Scene {
   platformPool: Phaser.GameObjects.Group;
   nextPlatformDistance: number;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-  spawnRange: any;
-  plarformSizeRange: number[];
   platformSizeRange: number[];
   spike1: Phaser.GameObjects.Image;
   timeText: Phaser.GameObjects.Text;
-  setBackgroundColor: any;
   platformHeight: number[];
   platformVerticalLimit: number[];
-  clock: any;
-  background: any;
+  background: Phaser.GameObjects.TileSprite;
   spikePool: Phaser.GameObjects.Group;
   spikeGroup: Phaser.GameObjects.Group;
   die: Phaser.Scenes.ScenePlugin;
   timer: Phaser.Time.TimerEvent;
   timeCounter: number = 0;
-  static timeCounter: number;
   deadlineText: string;
   player: PokiSprite;
-
-  platformChangeTime = 2;
+  platformChangeTime: number = 2;
   bgMusic: Phaser.Sound.BaseSound;
-  speedChangeTime = 25;
+  speedChangeTime: number = 25;
   jumpMusic: Phaser.Sound.BaseSound;
   overMusic: Phaser.Sound.BaseSound;
 
@@ -56,7 +50,6 @@ export default class GameScene extends Phaser.Scene {
     this.player = new PokiSprite(this);
     this.jumpMusic = this.sound.add('jump', { loop: false });
 
-
     //set the timer
     this.timeText = this.add.text(900, 20, 'Time Survived:');
     this.timeText.setScrollFactor(0, 0);
@@ -70,8 +63,6 @@ export default class GameScene extends Phaser.Scene {
     //add background music
     this.bgMusic = this.sound.add('background', { loop: true });
     this.bgMusic.play();
-
-
 
     // create platform group - the visible parts on the screen
     this.platformGroup = this.add.group({
@@ -120,18 +111,18 @@ export default class GameScene extends Phaser.Scene {
     posY: number,
     speed: number
   ) {
-    let platform;
+    let platform: Phaser.Physics.Arcade.Sprite;
+
     //if there is at least one platform in the pool, make the first one visible
     if (this.platformPool?.getLength()) {
       platform = this.platformPool.getFirst();
-      platform.x = posX;
-      platform.y = posY;
-      platform.setVelocityX = speed;
-      platform.active = true;
-      platform.visible = true;
+      platform.setPosition(posX, posY);
+      platform.setVelocityX(speed);
+      platform.setActive(true);
+      platform.setVisible(true);
       this.platformPool.remove(platform);
     } else {
-      console.log('here', posY);
+      // console.log('here', posY);
       platform = this.physics.add.sprite(posX, posY, 'platform');
       platform.setImmovable(true);
       platform.setVelocityX(speed);
@@ -149,9 +140,14 @@ export default class GameScene extends Phaser.Scene {
 
     // recycling platforms
     let minDistance = 1142;
-    let rightmostPlatformHeight;
+    let rightmostPlatformHeight: number;
+
     this.platformGroup.getChildren().forEach((platform) => {
-      let platformDistance = 1142 - platform.body.gameObject.x - platform.body.gameObject.displayWidth / 2;
+      let platformDistance =
+        minDistance -
+        platform.body.gameObject.x -
+        platform.body.gameObject.displayWidth / 2;
+
       if (platformDistance < minDistance) {
         minDistance = platformDistance;
         rightmostPlatformHeight = platform.body.gameObject.y;
@@ -168,27 +164,24 @@ export default class GameScene extends Phaser.Scene {
 
     // adding new platforms
     if (minDistance > this.nextPlatformDistance) {
-      let nextPlatformWidth = Phaser.Math.Between(100, 300);
-      let minPlatformHeight = 500 * 0.65;
-      let maxPlatformHeight = 500 * 0.8;
-      let posY = 400;
-      let posX = 1142 + nextPlatformWidth / 2;
-      let speed = -350;
+      const nextPlatformWidth: number = Phaser.Math.Between(100, 300);
+      const minPlatformHeight: number = 500 * 0.65;
+      const maxPlatformHeight: number = 500 * 0.8;
+      let posY: number = 400;
+      const posX: number = 1142 + nextPlatformWidth / 2;
+      let speed: number = -350;
 
       if (this.timeCounter > 10 && this.timeCounter <= 20) {
         posY = Phaser.Math.Between(minPlatformHeight, maxPlatformHeight);
-      }
-      if (this.timeCounter > 20 && this.timeCounter <= 30) {
+      } else if (this.timeCounter > 20 && this.timeCounter <= 30) {
         posY = Phaser.Math.Between(minPlatformHeight, maxPlatformHeight);
         speed = -500;
-      }
-      if (this.timeCounter > 30) {
+      } else if (this.timeCounter > 30) {
         posY = Phaser.Math.Between(minPlatformHeight, maxPlatformHeight);
         speed = -800;
       }
 
       this.addPlatform(nextPlatformWidth, posX, posY, speed);
-      console.log(posY, speed);
     }
 
     //jump
