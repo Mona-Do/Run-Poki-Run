@@ -7,6 +7,7 @@ export default class GameOpen extends Phaser.Scene {
   rexUI: any;
   deadlineText: Phaser.GameObjects.Text;
   startMusic: Phaser.Sound.BaseSound;
+  hintText: Phaser.GameObjects.Text;
 
   constructor() {
     super('gameopen');
@@ -17,8 +18,18 @@ export default class GameOpen extends Phaser.Scene {
   create() {
     this.add.image(0, 0, 'deadline-select').setOrigin(0);
 
-    this.deadlineText = this.add.text(571, 220, 'double-click to type', {
-      fixedHeight: 36,
+    this.hintText = this.add.text(
+      571,
+      270,
+      'Please enter a word within 12 characters.',
+      {
+        fixedHeight: 26,
+      }
+    );
+    this.hintText.setOrigin(0.5);
+
+    this.deadlineText = this.add.text(571, 220, 'double-click', {
+      fixedHeight: 28,
     });
     this.deadlineText.setOrigin(0.5);
 
@@ -29,6 +40,7 @@ export default class GameOpen extends Phaser.Scene {
     this.add
       .text(571, 350, 'Press SPACE to RUN!', {
         fontSize: '20px',
+        color: '0x000000',
       })
       .setOrigin(0.5);
 

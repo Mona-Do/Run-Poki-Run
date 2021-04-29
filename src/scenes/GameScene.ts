@@ -126,6 +126,7 @@ export default class GameScene extends Phaser.Scene {
       platform = this.platformPool.getFirst();
       platform.x = posX;
       platform.y = posY;
+      platform.setVelocityX = speed;
       platform.active = true;
       platform.visible = true;
       this.platformPool.remove(platform);
@@ -150,13 +151,16 @@ export default class GameScene extends Phaser.Scene {
     let minDistance = 1142;
     let rightmostPlatformHeight;
     this.platformGroup.getChildren().forEach((platform) => {
-      let platformDistance = 1142 - platform.x - platform.displayWidth / 2;
+      let platformDistance = 1142 - platform.body.gameObject.x - platform.body.gameObject.displayWidth / 2;
       if (platformDistance < minDistance) {
         minDistance = platformDistance;
-        rightmostPlatformHeight = platform.y;
+        rightmostPlatformHeight = platform.body.gameObject.y;
       }
 
-      if (platform.x < -platform.displayWidth / 2) {
+      if (
+        platform.body.gameObject.x <
+        -platform.body.gameObject.displayWidth / 2
+      ) {
         this.platformGroup.killAndHide(platform);
         this.platformGroup.remove(platform);
       }
@@ -171,13 +175,15 @@ export default class GameScene extends Phaser.Scene {
       let posX = 1142 + nextPlatformWidth / 2;
       let speed = -350;
 
-      if (this.timeCounter > 10) {
+      if (this.timeCounter > 10 && this.timeCounter <= 20) {
         posY = Phaser.Math.Between(minPlatformHeight, maxPlatformHeight);
       }
-      if (this.timeCounter > 20) {
+      if (this.timeCounter > 20 && this.timeCounter <= 30) {
+        posY = Phaser.Math.Between(minPlatformHeight, maxPlatformHeight);
         speed = -500;
       }
       if (this.timeCounter > 30) {
+        posY = Phaser.Math.Between(minPlatformHeight, maxPlatformHeight);
         speed = -800;
       }
 
