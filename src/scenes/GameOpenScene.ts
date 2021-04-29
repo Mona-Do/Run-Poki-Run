@@ -1,4 +1,3 @@
-
 // import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin';
 
 export default class GameOpen extends Phaser.Scene {
@@ -16,8 +15,10 @@ export default class GameOpen extends Phaser.Scene {
   preload() {}
 
   create() {
+    //add background
     this.add.image(0, 0, 'deadline-select').setOrigin(0);
 
+    //add deadline selection
     this.hintText = this.add.text(
       571,
       270,
@@ -37,6 +38,7 @@ export default class GameOpen extends Phaser.Scene {
       this.rexUI.edit(this.deadlineText);
     });
 
+    //add game start option
     this.add
       .text(571, 350, 'Press SPACE to RUN!', {
         fontSize: '20px',
@@ -45,7 +47,7 @@ export default class GameOpen extends Phaser.Scene {
       .setOrigin(0.5);
 
     //add bg music
-      this.startMusic = this.sound.add('start', { loop: true });
+    this.startMusic = this.sound.add('start', { loop: true });
     this.startMusic.play();
   }
 

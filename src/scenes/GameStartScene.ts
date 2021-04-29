@@ -8,10 +8,10 @@ export default class Gamestart extends Phaser.Scene {
   preload() {}
 
   create() {
-    //add play again option
+    //add background
     this.add.image(0, 0, 'start-background').setOrigin(0);
-    // this.startButton = this.add.image(571, 250, 'start-btn').setDepth(1);
-    // this.startButton.setInteractive();
+
+    //add gane start option
     this.add
       .text(571, 250, 'Press SPACE to start!', {
         fontSize: '20px',
