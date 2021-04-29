@@ -6,6 +6,7 @@ export default class GameOpen extends Phaser.Scene {
   startButton: Phaser.GameObjects.Image;
   rexUI: any;
   deadlineText: Phaser.GameObjects.Text;
+  startMusic: Phaser.Sound.BaseSound;
 
   constructor() {
     super('gameopen');
@@ -30,11 +31,16 @@ export default class GameOpen extends Phaser.Scene {
         fontSize: '20px',
       })
       .setOrigin(0.5);
+
+    //add bg music
+      this.startMusic = this.sound.add('start', { loop: true });
+    this.startMusic.play();
   }
 
   update() {
     this.cursors = this.input.keyboard.createCursorKeys();
     if (this.cursors.space?.isDown) {
+      this.startMusic.stop();
       this.scene.stop('gameopen');
       this.scene.start('game', { deadlineText: this.deadlineText.text });
     }

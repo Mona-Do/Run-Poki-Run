@@ -27,6 +27,8 @@ export default class GameScene extends Phaser.Scene {
   platformChangeTime = 2;
   bgMusic: Phaser.Sound.BaseSound;
   speedChangeTime = 25;
+  jumpMusic: Phaser.Sound.BaseSound;
+  overMusic: Phaser.Sound.BaseSound;
 
   constructor() {
     super('game');
@@ -46,12 +48,14 @@ export default class GameScene extends Phaser.Scene {
     const width = this.scale.width;
     const height = this.scale.height;
     this.background = this.add
-      .image(40, 0, 'layer-meme')
+      .tileSprite(40, 0, 1142, 500, 'layer-meme')
       .setOrigin(0, 0)
       .setScrollFactor(0, 0);
 
     //add player
     this.player = new PokiSprite(this);
+    this.jumpMusic = this.sound.add('jump', { loop: false });
+
 
     //set the timer
     this.timeText = this.add.text(900, 20, 'Time Survived:');
@@ -66,6 +70,8 @@ export default class GameScene extends Phaser.Scene {
     //add background music
     this.bgMusic = this.sound.add('background', { loop: true });
     this.bgMusic.play();
+
+
 
     // create platform group - the visible parts on the screen
     this.platformGroup = this.add.group({
@@ -131,16 +137,18 @@ export default class GameScene extends Phaser.Scene {
       this.platformGroup.add(platform);
     }
     platform.displayWidth = platformWidth;
+
     //platform distance setting
     this.nextPlatformDistance = Phaser.Math.Between(110, 280);
   }
 
   update() {
     this.player.x = 300;
+    this.background.tilePositionX += 3.5;
 
     // recycling platforms
     let minDistance = 1142;
-    let rightmostPlatformHeight = 0;
+    let rightmostPlatformHeight;
     this.platformGroup.getChildren().forEach((platform) => {
       let platformDistance = 1142 - platform.x - platform.displayWidth / 2;
       if (platformDistance < minDistance) {
@@ -156,16 +164,6 @@ export default class GameScene extends Phaser.Scene {
 
     // adding new platforms
     if (minDistance > this.nextPlatformDistance) {
-      // let platformRandomHeight = 10 * Phaser.Math.Between(10, -10);
-      // let nextPlatformGap = rightmostPlatformHeight + platformRandomHeight;
-
-      // let nextPlatformHeight = Phaser.Math.Clamp(
-      //   nextPlatformGap,
-      //   minPlatformHeight,
-      //   maxPlatformHeight
-      // );
-
-      console.log(this.timeCounter, this.platformChangeTime);
       let nextPlatformWidth = Phaser.Math.Between(100, 300);
       let minPlatformHeight = 500 * 0.65;
       let maxPlatformHeight = 500 * 0.8;
@@ -173,28 +171,25 @@ export default class GameScene extends Phaser.Scene {
       let posX = 1142 + nextPlatformWidth / 2;
       let speed = -350;
 
-      if (this.timeCounter > 2) {
+      if (this.timeCounter > 10) {
         posY = Phaser.Math.Between(minPlatformHeight, maxPlatformHeight);
+      }
+      if (this.timeCounter > 20) {
+        speed = -500;
+      }
+      if (this.timeCounter > 30) {
+        speed = -800;
       }
 
       this.addPlatform(nextPlatformWidth, posX, posY, speed);
-      console.log(posY);
-
-      // //change game speed
-      // if (this.timeCounter > this.speedChangeTime) {
-      //   this.addPlatform(
-      //     nextPlatformWidth,
-      //     1142 + nextPlatformWidth / 2,
-      //     nextPlatformHeight,
-      //     -500
-      //   );
-      // }
+      console.log(posY, speed);
     }
 
     //jump
     this.cursors = this.input.keyboard.createCursorKeys();
     if (this.cursors.space?.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-400);
+      // this.jumpMusic.play();
     }
 
     //game over

@@ -25,6 +25,9 @@ export default class Preloader extends Phaser.Scene {
       frameHeight: 40,
     });
     this.load.audio('background', ['assets/audio/background.mp3']);
+    this.load.audio('start', ['assets/audio/start.mp3']);
+    this.load.audio('jump', ['assets/audio/jump.mp3']);
+    this.load.audio('gameover', ['assets/audio/gameover.mp3']);
   }
 
   create() {

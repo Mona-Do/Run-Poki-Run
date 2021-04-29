@@ -6,6 +6,7 @@ export default class Gameover extends Phaser.Scene {
   timeText: any;
   timeCounter: number;
   deadlineText: any;
+  overMusic: any;
   constructor() {
     super('gameover');
   }
@@ -18,17 +19,12 @@ export default class Gameover extends Phaser.Scene {
   preload() {}
 
   create() {
+    //background music
+    this.overMusic = this.sound.add('gameover', { loop: false });
+    this.overMusic.play();
+    
     //add background
     this.add.image(0, 0, 'background').setOrigin(0);
-
-    //add score board
-    // this.add.rectangle(571, 250, 800, 300, 0xffffff, 1).setOrigin(0.5);
-    // this.timer = Math.round(this.time.now * 0.001);
-    // this.add
-    //   .text(571, 200, 'Time Survived: ' + this.timer.toString(), {
-    //     fontSize: '32px',
-    //   })
-    //   .setOrigin(0.5);
 
     this.timeText = this.add
       .text(571, 200, 'Time Survived:', {
@@ -50,6 +46,7 @@ export default class Gameover extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
     if (this.cursors.space?.isDown) {
       this.scene.stop('gameover');
+      this.overMusic.stop();
       this.scene.start('game');
     }
   }
