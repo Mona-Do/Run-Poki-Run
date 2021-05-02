@@ -3,15 +3,15 @@
 export default class Gameover extends Phaser.Scene {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   timer: number;
-  timeText: any;
+  timeText: Phaser.GameObjects.Text;
   timeCounter: number;
-  deadlineText: any;
-  overMusic: any;
+  deadlineText: Phaser.GameObjects.Text;
+  overMusic: Phaser.Sound.BaseSound;
   constructor() {
     super('gameover');
   }
 
-  init(data: { timeCounter: number; deadlineText: any; }) {
+  init(data: { timeCounter: number; deadlineText: any }) {
     this.timeCounter = data.timeCounter;
     this.deadlineText = data.deadlineText;
   }
@@ -22,7 +22,7 @@ export default class Gameover extends Phaser.Scene {
     //background music
     this.overMusic = this.sound.add('gameover', { loop: false });
     this.overMusic.play();
-    
+
     //add background
     this.add.image(0, 0, 'background').setOrigin(0);
 
@@ -31,7 +31,9 @@ export default class Gameover extends Phaser.Scene {
         fontSize: '32px',
       })
       .setOrigin(0.5);
-    this.timeText.setText(`You've escaped from ${this.deadlineText} for ${this.timeCounter} seconds.`);
+    this.timeText.setText(
+      `You've escaped from ${this.deadlineText} for ${this.timeCounter} seconds.`
+    );
 
     //add play again option
     this.add

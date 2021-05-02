@@ -6,9 +6,8 @@ export default class GameScene extends Phaser.Scene {
   nextPlatformDistance: number;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   timeText: Phaser.GameObjects.Text;
-  setBackgroundColor: any;
   platformHeight: number[];
-  background: any;
+  background: Phaser.GameObjects.TileSprite;
   die: Phaser.Scenes.ScenePlugin;
   timer: Phaser.Time.TimerEvent;
   timeCounter: number = 0;
