@@ -1,12 +1,10 @@
-// import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin';
-
 export default class GameOpen extends Phaser.Scene {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   startButton: Phaser.GameObjects.Image;
-  rexUI: any;
   deadlineText: Phaser.GameObjects.Text;
   startMusic: Phaser.Sound.BaseSound;
   hintText: Phaser.GameObjects.Text;
+  rexUI: any;
 
   constructor() {
     super('gameopen');
